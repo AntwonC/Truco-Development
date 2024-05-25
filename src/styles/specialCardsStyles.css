@@ -1,0 +1,12 @@
+.rectangle-rank-container {
+    display: flex;
+    height: 50px;
+    width: 200px;
+    background-color: white;
+}
+
+.ranks {
+    width: 50px;
+    height: 50px;
+}
+
