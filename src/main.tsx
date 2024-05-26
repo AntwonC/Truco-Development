@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
+
 import { ClerkProvider } from '@clerk/clerk-react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
@@ -13,6 +13,8 @@ import IndexPage from './components/Index';
 import SignInPage from './components/Sign-In';
 import SignUpPage from './components/Sign-Up';
 import DashboardPage from './components/Dashboard';
+
+import './styles/Dashboard.css';
 
 
 const router = createBrowserRouter([
