@@ -21,16 +21,9 @@ const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { path: "/", element: <IndexPage />},
+      { path: "/", element: <DashboardPage />},
       { path: "/sign-in/*", element: <SignInPage />},
       { path: "/sign-up/*", element: <SignUpPage />},
-      {
-        element: <DashboardLayout />,
-        path: "dashboard",
-        children: [
-          { path: "/dashboard", element: <DashboardPage />}
-        ]
-      }
     ]
   }
 ]);
@@ -40,3 +33,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <RouterProvider router={router} />
   </React.StrictMode>,
 )
+
+/* 
+    A protected path, but I don't need it currently. Maybe later.
+      {
+        element: <DashboardLayout />,
+        path: "dashboard",
+        children: [
+          { path: "/dashboard", element: <DashboardPage />}
+        ]
+      }
+
+*/

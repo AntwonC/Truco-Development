@@ -1,0 +1,109 @@
+.main-table-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50%;
+}
+
+.game-table-container {
+    display: grid;
+    grid-template-columns: 2fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        "top"
+        "table"
+        "bottom";
+    width: 300px;
+
+    margin: 0 auto;
+
+}
+
+.user-name-table-one {
+    grid-area: top;
+    justify-self: center;
+    align-self: center;
+}
+
+.user-name-table-two {
+    grid-area: bottom;
+    justify-self: center;
+    align-self: center;
+}
+/* --------------------------- */
+/* SCORE BOARD CLASS NAMES START */
+/* --------------------------- */
+
+.rectangle-container {
+    display: flex;
+    
+    width: 350px;
+    height: 150px;
+    background: teal;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    margin-top: 10%;
+    margin-bottom: 2em;
+    border: 3px blue solid;
+}
+.score-container {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    gap: 20px;
+    border-right: 3px red solid;
+   
+}
+
+.value-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-right: 3px red solid;
+}
+
+.special-card-container {
+    display: flex;
+   
+    align-content: flex-end;
+    gap: 10px;
+    
+}
+
+.top-user-turn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 3px red solid;
+    gap: 10px;
+}
+.circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 15px;
+    background: white;
+}
+
+.green-circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 15px;
+    background: green;
+}
+/* --------------------------- */
+/* SCORE BOARD CLASS NAMES END */
+/* --------------------------- */
+
+.game-table {
+    grid-area: table;
+    width: 150px;
+    height: 200px;
+    border: 7px solid black;
+    border-radius: 20%;
+    background-color: green;
+    justify-self: center;
+    grid-column: 1 / span 1;
+}
+
+.score-board-text {
+    margin-top: 80%;
+}
