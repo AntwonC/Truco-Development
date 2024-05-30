@@ -1,11 +1,13 @@
 import { Button, Container, createTheme, ThemeProvider } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ReactElement } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 import '../styles/GameRoom.css';
 import PlayerStack from './PlayerStack';
 import TopStack from './TopStack';
+
+import Card from '../components/Card';
 
 import CardInterface from '../interfaces/CardInterface';
 
@@ -46,6 +48,54 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
 
     const countSocketRequests = useRef<number>(0);
 
+    // Game useState objects
+    const [p1, setP1] = useState<string>("");
+    const [p2, setP2] = useState<string>("");
+
+    const [p1Hand, setP1Hand] = useState<CardInterface[]>([]);
+    const [p2Hand, setP2Hand] = useState<CardInterface[]>([]);
+
+    const [turnCard, setTurnCard] = useState<CardInterface>({rank: "", suit: "", key: 1000});
+    const [specialCard, setSpecialCard] = useState<CardInterface>({rank: "", suit: "", key: 1000});
+
+    const [roundValue, setRoundValue] = useState<number>(-1);
+
+
+    const showHand = (playerHand : CardInterface[]) : ReactElement => {
+    
+        return ( <div className="player-cards">
+            {playerHand.map((element) => {
+                if(element.suit === null || element.rank === null) {
+                    return;
+                }
+              return <Card suit={element.suit} rank={element.rank} key={element.key} click={true}/>
+            })}
+        </div>)
+    }
+
+    const disableClickShowHand = (playerHand : CardInterface[], player : string) => {
+
+        if(player === user ) {
+          return ( <div className="player-cards">
+          {playerHand.map((element) => {
+            if(element.suit === null || element.rank === null) {
+                return;
+            }
+            return <Card suit={element.suit} rank={element.rank} key={element.key}  click={true} />
+          })}
+          </div>)
+        } else {
+        return ( <div className="player-cards">
+        {playerHand.map((element) => {
+            if(element.suit === null || element.rank === null) {
+                return;
+            }
+          return <Card suit={element.suit} rank={element.rank} key={element.key}  click={false} />
+        })}
+        </div>)
+    
+        }
+      }
 
     const leaveRoomClicked = () => {
         //setJoin(false);
@@ -66,9 +116,9 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
         // How to handle this? 05/28/24
         socket.on("room-success", (userFromServer, room, usersInRoom, userTable) => {
             console.log(`countSocketRequests: ${countSocketRequests.current}`);
-            if(countSocketRequests.current > 1) {
-                return ; 
-            } else {
+            //if(countSocketRequests.current > 1) {
+             //   return ; 
+            //} else {
                 countSocketRequests.current = countSocketRequests.current + 1;
     
             /*    console.log(`${userFromServer} joined room ${roomNumber}`);
@@ -99,17 +149,41 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
             
                     socket.emit("start-game", tempVar, user, roomNumber);
                 }
-            } 
+           // } 
         });
 
-        socket.on("start-game-confirmed", (deck : CardInterface[], playerOneHand : CardInterface[], playerTwoHand : CardInterface[], playerOne : string, playerTwo : string) => {
+        socket.on("start-game-confirmed", 
+        (   deck : CardInterface[], 
+            playerOneHand : CardInterface[], 
+            playerTwoHand : CardInterface[], 
+            playerOne : string, 
+            playerTwo : string,
+            turnCard: CardInterface,
+            specialCard : CardInterface,
+            turnValue : number,
+            ) => {
+
             console.log(deck);
             console.log(playerOneHand);
             console.log(playerTwoHand);
 
             console.log(`playerOne: ${playerOne}`);
             console.log(`playerTwo: ${playerTwo}`);
-            
+            console.log(turnCard);
+            console.log(specialCard);
+            console.log(`turnValue: ${turnValue}`);
+
+            setP1(playerOne);
+            setP2(playerTwo);
+
+            setP1Hand([...playerOneHand]);
+            setP2Hand([...playerTwoHand]);
+
+            setTurnCard(turnCard);
+            setSpecialCard(specialCard);
+
+            setRoundValue(turnValue);
+
             //gameSession.deck,
             //gameSession.playerOneHand,
             //gameSession.playerTwoHand,
@@ -170,15 +244,25 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
 
                     </div>
 
+                    <div className="player-one-hand-container">
                         <TopStack
                             className="user-name-table-one"
                             user={topUser}
+                            player={p1 === topUser ? p1 : p2}
+                            hand={p1 === topUser ? p1Hand : p2Hand}
+                            disableShowHandFunction={disableClickShowHand}
                         />
+                    </div>
 
-                        <PlayerStack
-                            className="user-name-table-two" 
-                            user={bottomUser}
-                        />
+                        <div className="player-two-hand-container">
+                            <PlayerStack
+                                className="user-name-table-two" 
+                                user={bottomUser}
+                                player={p1 === bottomUser ? p1 : p2}
+                                hand={p1 === bottomUser ? p1Hand : p2Hand}
+                                showHandFunction={showHand}
+                            />
+                        </div>
                 </div>
            
 

@@ -12,7 +12,7 @@
     grid-template-rows: repeat(7, 1fr);
     position: relative;
     justify-items: center;
-    font-size: 15px;
+    font-size: 11px;
 }
 
 .pip {
@@ -20,6 +20,7 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     pointer-events: none;
+    
 }
 
 [data-value="2"] .pip:first-child {
@@ -367,6 +368,7 @@
     justify-content: center;
     align-items: center;
     letter-spacing: -.15em;
+    font-size: 15px;
 }
 
 .corner-number::after {
@@ -430,7 +432,7 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    width: 110%;
+    width: 75%;
 }
 
 [data-suit="D"] .pip {
@@ -438,7 +440,7 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    width: 110%;
+    width: 75%;
 }
 
 [data-suit="C"] .pip {
@@ -446,7 +448,8 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    width: 110%;
+    width: 75%;
+    
 }
 
 .bg-card {
@@ -460,7 +463,7 @@
     background-image: url("/src/assets/back.png");
     background-size: contain;
     background-repeat: no-repeat;
-    font-size: 20px;
+    font-size: 13px;
 }
 
 .card-button {

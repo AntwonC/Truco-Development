@@ -13,7 +13,6 @@
         "table"
         "bottom";
     width: 300px;
-
     margin: 0 auto;
 
 }
@@ -29,6 +28,8 @@
     justify-self: center;
     align-self: center;
 }
+
+
 /* --------------------------- */
 /* SCORE BOARD CLASS NAMES START */
 /* --------------------------- */
@@ -106,4 +107,24 @@
 
 .score-board-text {
     margin-top: 80%;
+}
+
+
+.player-one-hand-container {
+    grid-column: 1 / span 1;
+    grid-row: 1 / 1;
+    justify-self: center;
+}
+
+.player-two-hand-container {
+
+    grid-column: 1 / span 1;
+    grid-row: 3 / 3;
+    justify-self: center;
+        
+}
+
+.player-cards {
+    display: flex;
+    gap: 5px;
 }

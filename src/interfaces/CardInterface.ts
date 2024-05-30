@@ -1,5 +1,5 @@
 export default interface Card {
-    rank : string,
-    suit : string,
+    rank : string | null,
+    suit : string | null,
     key : number,
 }
