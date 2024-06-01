@@ -1,6 +1,6 @@
 .card {
     --width: 5em;
-    --height: calc(var(--width) * 1.4);
+    --height: calc(var(--width) * 1.5);
     width: var(--width);
     height: var(--height);
     background-color: white;

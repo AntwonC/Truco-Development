@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, MouseEventHandler } from 'react';
 import '../styles/Card.css';
 
 interface Props {
     suit: string,
     rank: string,
+    onClick?: MouseEventHandler<HTMLDivElement>
     click: boolean,
+    //showHandFunction : (hand : CardInterface[]) => ReactElement
 }
 
-const Card = ({ suit, rank, click} : Props) => {
+const Card = ({ suit, rank, onClick, click} : Props) => {
 
     const [counter, setCounter] = useState(0);
 
@@ -130,7 +132,7 @@ const Card = ({ suit, rank, click} : Props) => {
         <>
         { click ?
 
-       ( <div className="card" data-suit={suit} data-value={rank}>
+       ( <div className="card" data-suit={suit} data-value={rank} onClick={onClick}>
 
             {createPips()}
             
@@ -143,7 +145,7 @@ const Card = ({ suit, rank, click} : Props) => {
         
         :
         
-        (<div className="bg-card" onClick={cardClicked}></div>)
+        (<div className="bg-card"></div>)
         }
         </>
        
