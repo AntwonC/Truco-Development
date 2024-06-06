@@ -69,6 +69,10 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
     const [t2Rounds, setT2Rounds] = useState<number[]>([]);
 
     const [gameBoardTable, setGameBoardTable] = useState<CardInterface[]>([]);
+    const [userWonRound, setUserWonRound] = useState<string>("");
+
+    // Refs
+    const waiting = useRef<boolean>(false);
 
 
     const decideTurn = (playerTurns : number[]) => {
@@ -145,7 +149,43 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
         </div>)
     
         }
-      }
+    }
+
+    const updateRound = (round : number[], player : string, userWonRound : string) => {
+        console.log(`in updateRound()`);
+        console.log(round);
+        if(player === userWonRound) {
+          return (
+            <div>{round.map((element) => {
+              if(element === 0) {
+                return <div className="green-circle"> </div>
+              } else {
+                return <div className="circle"></div>
+              }
+            })}</div>
+          )
+        } else if(player === userWonRound) {
+          return (
+            <div>{round.map((element) => {
+              if(element === 0) {
+                return <div className="green-circle"> </div>
+              } else {
+                return <div className="circle"></div>
+              }
+            })}</div>
+          )
+        }
+    
+        return (
+          <div>{round.map((element) => {
+            if(element === 0) {
+              return <div className="green-circle"> </div>
+            } else {
+              return <div className="circle"></div>
+            }
+          })}</div>
+        )
+      } 
 
     const leaveRoomClicked = () => {
         //setJoin(false);
@@ -201,6 +241,8 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
             playerTurns : number[],
             teamOneScore : number,
             teamTwoScore : number,
+            teamOneRounds : number[],
+            teamTwoRounds : number[],
             ) => {
 
             console.log(deck);
@@ -229,6 +271,9 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
             
             setT1Score(teamOneScore);
             setT2Score(teamTwoScore);
+
+            setT1Rounds([...teamOneRounds]);
+            setT2Rounds([...teamTwoRounds]);
 
             console.log(`turnCard:`);
             console.log(turnCard);
@@ -279,10 +324,124 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
        
            });
 
+
+
+           socket.on("winner-round", 
+           (winner : CardInterface,
+            p1RoundsArr : number[], 
+            p2RoundsArr : number[], 
+            playerOne : string, 
+            playerTwo : string, 
+            turns : number[],
+            ) => {
+            const winnerUser = winner.turn;
+
+            
+            setUserWonRound(winnerUser === undefined ? "" : winnerUser);
+      
+            console.log(`Turns...`);
+            console.log(turns);
+      
+           /* setTimeout(() => {
+              
+            }, 1500); */
+            
+            setPlayerTurn([...turns]);
+            // check if anybody has won this turn...
+            const p1TempArr = [...p1RoundsArr];
+            const p2TempArr = [...p2RoundsArr];
+      
+            if(winnerUser === playerOne) {
+              // increment round for the user...
+              setT1Rounds([...p1RoundsArr]);
+            } else if(winnerUser === playerTwo) {
+              setT2Rounds([...p2RoundsArr]);
+            }
+      
+      
+            // [0, -1, -1]
+            // [0, 0, -1]
+      
+            // [-1, 0, -1]
+            // [0, -1, 0]
+      
+            // Check for double tie first... then increment score based on that..
+            let checkDoubleTieCounter1 = 0;
+            
+            for(let x = 0; x < p1TempArr.length; x++) {
+              const currentIndex = p1TempArr[x];
+              
+              if(checkDoubleTieCounter1 === 2) {
+                
+              } else if(currentIndex === 0) {
+                checkDoubleTieCounter1++;
+              }
+            }
+            
+            let checkDoubleTieCounter2 = 0;
+      
+            for(let x = 0; x < p2TempArr.length; x++) {
+              const currentIndex = p2TempArr[x];
+      
+              if(checkDoubleTieCounter2 === 2) {
+      
+              } else if(currentIndex === 0) {
+                checkDoubleTieCounter2++;
+              }
+          }
+      
+            // Should give both teams the point, if reaches the limit then it will be handled.
+            // Person that initiated the tie should go first..  -> 05/10/2024
+            if(checkDoubleTieCounter1 === 2 && checkDoubleTieCounter2 === 2) {
+              console.log("We got a double tie! Give a point to both teams");
+              const tieString = "tie";
+             // socket.emit("reset-next-turn", tieString, roomNumber);
+              return;
+            }
+      
+      
+            let p1Counter = 0;
+            //console.log(`p1Counter: ${p1Counter}`);
+      
+            for(let i = 0; i < p1TempArr.length; i++) {
+              const currentIndex = p1TempArr[i];
+              console.log(`p1Counter: ${p1Counter} ${i}`);
+              if(p1Counter === 2) {
+                // p1 won the turn...reset the state for next turn...
+                console.log(`player 1 won this turn! ${playerOne}`);
+               // socket.emit("reset-next-turn", playerOne, roomNumber);
+                return ;
+              } else if(currentIndex === 0) {
+                p1Counter++;
+              }
+            }
+      
+            let p2Counter = 0;
+           
+            //console.log(`p2Counter: ${p2Counter}`);
+      
+            for(let i = 0; i < p2TempArr.length; i++) {
+              const currentIndex = p2TempArr[i];
+              console.log(`p2Counter: ${p2Counter} ${i}`);
+              if(p2Counter === 2) {
+                // p2 won the turn...
+                console.log(`player 2 won this turn! ${playerTwo}`);
+             //  socket.emit("reset-next-turn", playerTwo, roomNumber);
+                return ;
+              } else if(currentIndex === 0) {
+                p2Counter++;
+              }
+            }
+      
+      
+      
+          });
+
         return () => {
             socket.off("room-success");
             socket.off("start-game-confirmed");
             socket.off("turn-completed");
+            socket.off("winner-round");
         }
     }, [socket]);
     return (
@@ -293,9 +452,12 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                     <div className="top-user-turn">
 
                         {topUser}
+                        {updateRound(t1Rounds, p1, userWonRound)}
+
                     </div>
                     <div className="top-user-turn">
                             {bottomUser}
+                            {updateRound(t2Rounds, p2, userWonRound)}
                         </div>
                     </div>
                     
@@ -330,6 +492,14 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                 <div className="game-table-container">
                     <div className="game-table">
                         
+                    {gameBoardTable.map((element) => {
+                        if(gameBoardTable.length === 2) {
+                        waiting.current = true;
+                        } else {
+                        waiting.current = false;
+                        }
+                        return (<Card suit={element.suit === null ? "" : element.suit} rank={element.rank === null ? "" : element.rank} key={element.key}  click={true} />)
+                    })}
 
                     </div>
 
