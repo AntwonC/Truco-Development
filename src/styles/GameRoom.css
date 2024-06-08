@@ -46,6 +46,11 @@
     margin-bottom: 2em;
     border: 3px blue solid;
 }
+
+.turn-container {
+    display: flex;
+    
+}
 .score-container {
     display: flex;
     flex-direction: column;

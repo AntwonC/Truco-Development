@@ -3,6 +3,7 @@ import { ClerkProvider, SignedIn, SignedOut, UserButton } from '@clerk/clerk-rea
 import AppBar from '@mui/material/AppBar';
 import { createTheme, Typography } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
+import '../styles/RootLayout.css';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -34,6 +35,7 @@ export default function RootLayout() {
       routerPush={(to) => navigate(to)}
       routerReplace={(to) => navigate(to, { replace: true })}
       publishableKey={PUBLISHABLE_KEY}
+      
     >
       <header className="header">
         <div>
@@ -51,9 +53,10 @@ export default function RootLayout() {
         </div>
 
       </header>
-      <main>
-        <Outlet />
-      </main>
+
+     
+        <Outlet/>
+      
     </ClerkProvider>
   )
 }

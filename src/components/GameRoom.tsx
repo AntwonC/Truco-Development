@@ -3,13 +3,14 @@ import { useState, useEffect, useRef, ReactElement, ChangeEvent } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
-import '../styles/GameRoom.css';
 import PlayerStack from './PlayerStack';
 import TopStack from './TopStack';
 
 import Card from '../components/Card';
 
 import CardInterface from '../interfaces/CardInterface';
+
+import '../styles/GameRoom.css';
 
 interface Props {
     socket: Socket,
