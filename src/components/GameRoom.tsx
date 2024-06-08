@@ -45,32 +45,35 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
     const [topUser, setTopUser] = useState<string | null>(null);
     const [bottomUser, setBottomUser] = useState<string | null>(null);
 
-    const [gameStarted, setGameStarted] = useState<boolean>(false);
-
+    
     const countSocketRequests = useRef<number>(0);
-
+    
     // Game useState objects
     const [p1, setP1] = useState<string>("");
     const [p2, setP2] = useState<string>("");
-
+    
     const [p1Hand, setP1Hand] = useState<CardInterface[]>([]);
     const [p2Hand, setP2Hand] = useState<CardInterface[]>([]);
-
+    
     const [turnCard, setTurnCard] = useState<CardInterface>({rank: null, suit: null, key: 2000});
     const [specialCard, setSpecialCard] = useState<CardInterface>({rank: null, suit: null, key: 1000});
-
+    
     const [roundValue, setRoundValue] = useState<number>(-1);
-
+    
     const [playerTurn, setPlayerTurn] = useState<number[]>([]);
-
+    
     const [t1Score, setT1Score] = useState<number>(-1);
     const [t2Score, setT2Score] = useState<number>(-1);
 
     const [t1Rounds, setT1Rounds] = useState<number[]>([]);
     const [t2Rounds, setT2Rounds] = useState<number[]>([]);
-
+    
     const [gameBoardTable, setGameBoardTable] = useState<CardInterface[]>([]);
     const [userWonRound, setUserWonRound] = useState<string>("");
+    
+    const [gameWinner, setGameWinner] = useState<number>(-1);
+    const [gameStarted, setGameStarted] = useState<boolean>(false);
+    
 
     // Refs
     const waiting = useRef<boolean>(false);
@@ -230,6 +233,18 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
            // } 
         });
 
+        socket.on("user-left-room", (user : string, roomNumber : number, usersInRoom: number) => {
+          console.log(`user-left-room getting triggered in GameRoom.jsx`);
+      
+
+          setGameStarted(false);
+          setNumInRoom(usersInRoom);
+          //console.log(room);
+          
+        });
+
+
+
         socket.on("start-game-confirmed", 
         (   deck : CardInterface[], 
             playerOneHand : CardInterface[], 
@@ -281,6 +296,8 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
 
             console.log(specialCard);
 
+            setGameStarted(true);
+
             //gameSession.deck,
             //gameSession.playerOneHand,
             //gameSession.playerTwoHand,
@@ -288,7 +305,7 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
             //gameSession.playerTwo,
         });
 
-        socket.on("turn-completed", 
+           socket.on("turn-completed", 
             (p1Hand : CardInterface[],
              p2Hand : CardInterface[],
              roundOne : number[],
@@ -396,7 +413,7 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
             if(checkDoubleTieCounter1 === 2 && checkDoubleTieCounter2 === 2) {
               console.log("We got a double tie! Give a point to both teams");
               const tieString = "tie";
-             // socket.emit("reset-next-turn", tieString, roomNumber);
+              socket.emit("reset-next-turn", tieString, roomNumber);
               return;
             }
       
@@ -410,7 +427,7 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
               if(p1Counter === 2) {
                 // p1 won the turn...reset the state for next turn...
                 console.log(`player 1 won this turn! ${playerOne}`);
-               // socket.emit("reset-next-turn", playerOne, roomNumber);
+                socket.emit("reset-next-turn", playerOne, roomNumber);
                 return ;
               } else if(currentIndex === 0) {
                 p1Counter++;
@@ -427,7 +444,7 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
               if(p2Counter === 2) {
                 // p2 won the turn...
                 console.log(`player 2 won this turn! ${playerTwo}`);
-             //  socket.emit("reset-next-turn", playerTwo, roomNumber);
+               socket.emit("reset-next-turn", playerTwo, roomNumber);
                 return ;
               } else if(currentIndex === 0) {
                 p2Counter++;
@@ -438,11 +455,76 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
       
           });
 
+          socket.on("reset-completed", 
+            (
+              playerOneHand : CardInterface[],
+              playerTwoHand : CardInterface[],
+              turnCardObject : CardInterface,
+              specialCardObject : CardInterface,
+              teamOneScore : number,
+              teamTwoScore : number,
+              playerTurnsObject : number[],
+              roundValueVariable : number,
+              roundOne : number[],
+              roundTwo : number[],
+            ) => {
+
+
+            //  revealPlayerOneHand.current = false;
+            //  revealPlayerTwoHand.current = false;
+
+            //  setClownsCountClickedP1(false);
+            //  setClownsCountClickedP2(false);
+
+            //  setRenderAgain(false);
+
+
+              
+              setRoundValue(roundValueVariable);
+              // To have delay to show how many rounds each team/player won
+              setTimeout(() => {
+                setT1Rounds([...roundOne]);
+                setT2Rounds([...roundTwo]);
+              }, 1500);
+              
+              setPlayerTurn([...playerTurnsObject]);
+              
+              setP1Hand([...playerOneHand]);
+              setP2Hand([...playerTwoHand]);
+
+              setTurnCard(turnCardObject);
+              setSpecialCard(specialCardObject);
+
+              console.log(`teamOneScore: ${teamOneScore}`);
+              console.log(`teamTwoScore: ${teamTwoScore}`);
+
+              
+              setT1Score(teamOneScore);
+              setT2Score(teamTwoScore);
+
+          });
+
+
+          socket.on("game-winner", (value) => {
+            if(value === 1) { // p1 won
+              setGameWinner(1);
+            } else if(value === 2) { // p2 won
+              setGameWinner(2);
+            } else {
+              setGameWinner(0);
+            }
+      
+          });
+
+
+
         return () => {
             socket.off("room-success");
             socket.off("start-game-confirmed");
             socket.off("turn-completed");
             socket.off("winner-round");
+            socket.off("reset-completed");
+            socket.off("game-winner");
         }
     }, [socket]);
     return (
@@ -452,12 +534,12 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                     <div className="turn-container">
                     <div className="top-user-turn">
 
-                        {topUser}
+                        {p1 === undefined ? "" : p1}
                         {updateRound(t1Rounds, p1, userWonRound)}
 
                     </div>
                     <div className="top-user-turn">
-                            {bottomUser}
+                            {p2 === undefined ? "" : p2}
                             {updateRound(t2Rounds, p2, userWonRound)}
                         </div>
                     </div>
@@ -487,6 +569,20 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                 
                 </div>
                     
+              </div>
+
+                <div>
+                  {gameWinner === 1 ?
+                  <h3>{p1} has won!</h3>
+                  : 
+                  <></>
+                  }
+
+                  {gameWinner === 2 ?
+                  <h3>{p2} has won!</h3>
+                  : 
+                  <></>
+                  }
                 </div>
 
 
@@ -503,7 +599,10 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                     })}
 
                     </div>
-
+                    {gameStarted  
+                    
+                    ?
+                    <>
                     <div className="player-one-hand-container">
                         <TopStack
                             className="user-name-table-one"
@@ -530,7 +629,15 @@ const GameRoom = ({ socket, roomNumber, user } : Props) => {
                                 p2={p2}
                             />
                         </div>
+                        </>
+                      :
+                      <></>
+
+                    }
                 </div>
+                     
+
+                  
            
 
                 <Container>
