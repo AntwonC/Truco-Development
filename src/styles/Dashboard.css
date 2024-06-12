@@ -1,11 +1,10 @@
 body {
-    background-color: grey;
+  background-color: grey;
 }
 .dashboard-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 250px;
 }
-

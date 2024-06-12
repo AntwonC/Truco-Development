@@ -1,13 +1,13 @@
 .circle {
-    width: 25px;
-    height: 25px;
-    border-radius: 15px;
-    background: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 15px;
+  background: white;
 }
 
 .green-circle {
-    width: 25px;
-    height: 25px;
-    border-radius: 15px;
-    background: green;
+  width: 25px;
+  height: 25px;
+  border-radius: 15px;
+  background: green;
 }

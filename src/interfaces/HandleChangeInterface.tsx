@@ -1,3 +1,3 @@
 export interface HandleChangeInterface {
-    target: HTMLInputElement
+  target: HTMLInputElement;
 }
