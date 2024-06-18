@@ -606,6 +606,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("game-winner");
       socket.off("waiting-game-board-finished");
       socket.off("truco-called");
+      socket.off("truco-declined");
     };
   }, [socket]);
   return (
