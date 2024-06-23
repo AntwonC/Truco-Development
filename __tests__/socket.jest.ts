@@ -127,7 +127,7 @@ describe("my awesome project", () => {
       });
     });
       
-  test("start a game with two players", (done) => {
+  test("start a game with two players", async () => {
     //  socket.on("start-game", (playerOne : string, playerTwo : string, roomNumber : number)
     // socket.emit("start-game", tempVar, user, roomNumber);
     const roomNumber: number = 123;
@@ -137,77 +137,52 @@ describe("my awesome project", () => {
     let undefinedCheck1: boolean = false;
     let undefinedCheck2: boolean = false;
     // Client1 initials a start-game, doesn't matter which client does it
-    client1.emit("start-game", player1, player2, roomNumber);
+    
+    const clientOneActionSent = new Promise<void>((resolve) => {
+      client1.emit("start-game", player1, player2, roomNumber);
+      
+      
+      client1.on("start-game-confirmed", 
+      (
+        deckObject: CardInterface[],
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        turnCardObject: CardInterface,
+        specialCardObject: CardInterface,
+        roundValueObject: number,
+        playerTurnObject: number[],
+        teamOneScoreObject: number,
+        teamTwoScoreObject: number,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
 
+      ) => {
+            console.log("in client1");
+            console.log(deckObject);
+          expect(deckObject).toBeDefined();
+          expect(playerOneHandObject).toBeDefined();
+          expect(playerTwoHandObject).toBeDefined();
+          expect(turnCardObject).toBeDefined();
+          expect(specialCardObject).toBeDefined();
+          expect(roundValueObject).toBeDefined();
+          expect(playerTurnObject).toBeDefined();
+          expect(teamOneScoreObject).toBeDefined();
+          expect(teamTwoScoreObject).toBeDefined();
+          expect(teamOneRoundsObject).toBeDefined();
+          expect(teamTwoRoundsObject).toBeDefined();
+          resolve();
+        });
+      }
+    )
+
+    await clientOneActionSent;
     //setTimeout(() => {
 
      // client2.emit("start-game", player1, player2, roomNumber);
     //}, 1000);
-    client1.on("start-game-confirmed", 
-        (
-          deckObject: CardInterface[],
-          playerOneHandObject: CardInterface[],
-          playerTwoHandObject: CardInterface[],
-          playerOneObject: string,
-          playerTwoObject: string,
-          turnCardObject: CardInterface,
-          specialCardObject: CardInterface,
-          roundValueObject: number,
-          playerTurnObject: number[],
-          teamOneScoreObject: number,
-          teamTwoScoreObject: number,
-          teamOneRoundsObject: number[],
-          teamTwoRoundsObject: number[],
 
-        ) => {
-          console.log("in client1");
-          console.log(deckObject);
-        expect(deckObject).toBeDefined();
-        expect(playerOneHandObject).toBeDefined();
-        expect(playerTwoHandObject).toBeDefined();
-        expect(turnCardObject).toBeDefined();
-        expect(specialCardObject).toBeDefined();
-        expect(roundValueObject).toBeDefined();
-        expect(playerTurnObject).toBeDefined();
-        expect(teamOneScoreObject).toBeDefined();
-        expect(teamTwoScoreObject).toBeDefined();
-        expect(teamOneRoundsObject).toBeDefined();
-        expect(teamTwoRoundsObject).toBeDefined();
-        done();
-    });
-
-    /*client2.on("start-game-confirmed", 
-        (
-          deckObject: CardInterface[],
-          playerOneHandObject: CardInterface[],
-          playerTwoHandObject: CardInterface[],
-          playerOneObject: string,
-          playerTwoObject: string,
-          turnCardObject: CardInterface,
-          specialCardObject: CardInterface,
-          roundValueObject: number,
-          teamOneScoreObject: number,
-          teamTwoScoreObject: number,
-          teamOneRoundsObject: number[],
-          teamTwoRoundsObject: number[],
-
-        ) => {
-          console.log("in client2");
-          
-        console.log(deckObject);
-        expect(deckObject).toBeDefined();
-        expect(playerOneHandObject).toBeDefined();
-        expect(playerTwoHandObject).toBeDefined();
-        expect(turnCardObject).toBeDefined();
-        expect(specialCardObject).toBeDefined();
-        expect(roundValueObject).toBeDefined();
-        expect(teamOneScoreObject).toBeDefined();
-        expect(teamTwoScoreObject).toBeDefined();
-        expect(teamOneRoundsObject).toBeDefined();
-        expect(teamTwoRoundsObject).toBeDefined();
-
-        done();
-    }); */
     
   });
 
@@ -229,7 +204,7 @@ describe("my awesome project", () => {
              );
   
   */
-  test("two players play a turn", (done) => {
+  test("two players play a turn", async () => {
     const roomNumber: number = 123;
     const player1: string = "anthony";
     const player2: string = "ofir1";
@@ -245,127 +220,548 @@ describe("my awesome project", () => {
 
     let playerTurns: number[] = [];
 
-    client1.emit("start-game", player1, player2, roomNumber);
+    //client1.emit("start-game", player1, player2, roomNumber);
 
-    // Need to grab the current game that was created from the test before
-    client1.on("start-game-confirmed", 
-    (
-      deckObject: CardInterface[],
-      playerOneHandObject: CardInterface[],
-      playerTwoHandObject: CardInterface[],
-      playerOneObject: string,
-      playerTwoObject: string,
-      turnCardObject: CardInterface,
-      specialCardObject: CardInterface,
-      roundValueObject: number,
-      playerTurnsObject: number[],
-      teamOneScoreObject: number,
-      teamTwoScoreObject: number,
-      teamOneRoundsObject: number[],
-      teamTwoRoundsObject: number[],
-
-    ) => {
-      console.log("in client1");
-      //console.log(deckObject);
-
+    const clientOneActionSent = new Promise<void>((resolve) => {
+      client1.emit("start-game", player1, player2, roomNumber);
       
-      // console.log(playerOneHandObject);
-      // console.log(playerTwoHandObject);
-      expect(deckObject).toBeDefined();
-      expect(playerOneHandObject).toBeDefined();
-      expect(playerTwoHandObject).toBeDefined();
-      expect(turnCardObject).toBeDefined();
-      expect(specialCardObject).toBeDefined();
-      expect(playerTurnsObject).toBeDefined();
-      expect(roundValueObject).toBeDefined();
-      expect(teamOneScoreObject).toBeDefined();
-      expect(teamTwoScoreObject).toBeDefined();
-      expect(teamOneRoundsObject).toBeDefined();
-      expect(teamTwoRoundsObject).toBeDefined();
+      
+      client1.on("start-game-confirmed", 
+      (
+        deckObject: CardInterface[],
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        turnCardObject: CardInterface,
+        specialCardObject: CardInterface,
+        roundValueObject: number,
+        playerTurnObject: number[],
+        teamOneScoreObject: number,
+        teamTwoScoreObject: number,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
 
-      p1Hand = playerOneHandObject;
-      p2Hand = playerTwoHandObject;
+      ) => {
+            //console.log("in client1");
+            console.log(deckObject);
+          expect(deckObject).toBeDefined();
+          expect(playerOneHandObject).toBeDefined();
+          expect(playerTwoHandObject).toBeDefined();
+          expect(turnCardObject).toBeDefined();
+          expect(specialCardObject).toBeDefined();
+          expect(roundValueObject).toBeDefined();
+          expect(playerTurnObject).toBeDefined();
+          expect(teamOneScoreObject).toBeDefined();
+          expect(teamTwoScoreObject).toBeDefined();
+          expect(teamOneRoundsObject).toBeDefined();
+          expect(teamTwoRoundsObject).toBeDefined();
 
-      p1FirstCard = playerOneHandObject[0];
-      p2FirstCard = playerTwoHandObject[0];
 
-      playerTurns = playerTurnsObject;
-      //  done();
+          p1FirstCard = playerOneHandObject.shift();
+          p2FirstCard = playerTwoHandObject.shift();
 
-    console.log(p1FirstCard);
-    console.log(p2FirstCard);
+          p1FirstCard.turn = player1;
+          p2FirstCard.turn = player2;
+
+          resolve();
+        });
+      });
+
+      await clientOneActionSent;
     
-  });
 
-  //"turn-play-card", (card : CardInterface, playerTurn : number[], roomNumber : number
-    client1.emit("turn-play-card", p1FirstCard, playerTurns, roomNumber);
+    const clientTwoActionSent = new Promise<void>((resolve) => {
+      client1.emit("turn-play-card", p1FirstCard, [-1, 0], roomNumber);
 
-    //
-    done();
+      client1.on("winner-round", 
+        (
+          roundWinnerObject: string,
+          teamOneRoundsObject: number[],
+          teamTwoRoundsObject: number[],
+          playerOneObject: string,
+          playerTwoObject: string,
+          playerTurnsObject: number[],
+        ) => {
+          console.log("client1 winner round");
+          
+          const t1Rounds = teamOneRoundsObject;
+          const t2Rounds = teamTwoRoundsObject;
 
-  });
+          let counterForOne = 0;
+          // checking for two zero's
+          
+          for(let i = 0; i < t1Rounds.length; i++) {
+            if(t1Rounds[i] === 0) {
+              counterForOne++;
+            }
+          }
+          
+          let counterForTwo = 0;
 
-  
-});
+          for(let i = 0; i < t2Rounds.length; i++) {
+            if(t2Rounds[i] === 0) {
+              counterForTwo++;
+            }
+          }
+            
+          if(counterForOne === 2) {
+            resolve();
+          } else if(counterForTwo === 2) {
+            resolve();
+          }
+          
+          resolve();
+      });
 
- /* test("two players joining a room to start a game", (done) => {
-    let counterCalled = 0;
+      client1.on("turn-completed", 
+          (
+            playerOneHandObject: CardInterface[],
+            playerTwoHandObject: CardInterface[],
+            teamOneRoundsObject: number[],
+            teamTwoRoundsObject: number[],
+            gameBoardObject: CardInterface[],
+            playerTurnsObject: number[],
+          ) => {
 
-    serverSocket.on("join-room", (roomNumber : number, user : string, callback) => {
-      
-      counterCalled++;
-      const roomNumberString : string = roomNumber.toString();
+           // console.log("client1 turn completed");
+           // console.log('------------------------------');
+           // console.log(teamOneRoundsObject);
+           // console.log(teamTwoRoundsObject);
+           // console.log('------------------------------');
+            
+           
+            resolve();
+        });
 
-      const userExistsOnTable = object.findUserOnTable(user, roomNumber);
-      
-      if(userExistsOnTable === false) {
-          object.addUserOnTable(user, roomNumber);
-      }
-      //const usersOnTable = object.getUsersOnTable();
 
-      
-      serverSocket.join(roomNumberString); // socket joining room
+    });
+    // Need to grab the current game that was created from the test before
 
-      const usersInRoom = io.sockets.adapter.rooms.get(roomNumberString);
-      let numberOfUsersInRoom = usersInRoom ? usersInRoom.size : 0;
-      console.log(usersInRoom);
-      expect(object).toBeInstanceOf(userStorageObject);
-     // console.log(counterCalled);
+    await clientTwoActionSent;
+    
 
-     if(callback) {
-      callback();
-     }
-      if(counterCalled === 2) {
-        console.log(`numberOfUsersInRoom: ${numberOfUsersInRoom}`);
-        expect(numberOfUsersInRoom).toBe(2);
-        done();
-      }
-     // done();
-     // console.log(io.sockets.adapter.rooms.get(roomNumberString));
-     // console.log('-----------------------------------');
-      serverSocket.emit("room-success");
-      //socket.emit("room-success");
-      //io.to(roomNumberString).emit("room-success", user, roomNumber, numberOfUsersInRoom, usersOnTable); 
-    //  socket.emit("room-success", user, roomNumber, usersInRoom, usersOnTable); 
-  });
-    serverSocket.on("join-room", (roomNumber, player1) => {
-      done();
-    }); 
+    const clientTwoTurnCardSent = new Promise<void>((resolve) => {
+    
 
-    clientSocket.on("room-success", () => {
-      console.log("client got room-success");
-      
+      setTimeout(() => {
+        client2.emit("turn-play-card", p2FirstCard, [0, -1], roomNumber);
+      }, 2000);
+
+      client2.on("winner-round", 
+      (
+        roundWinnerObject: string,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        playerTurnsObject: number[],
+      ) => {
+        console.log("client2 winner round");
+
+        const t1Rounds = teamOneRoundsObject;
+        const t2Rounds = teamTwoRoundsObject;
+
+        let counterForOne = 0;
+        // checking for two zero's
+        
+        for(let i = 0; i < t1Rounds.length; i++) {
+          if(t1Rounds[i] === 0) {
+            counterForOne++;
+          }
+        }
+        
+        let counterForTwo = 0;
+
+        for(let i = 0; i < t2Rounds.length; i++) {
+          if(t2Rounds[i] === 0) {
+            counterForTwo++;
+          }
+        }
+        // Tie case, will code it to run a certain test suite if possible with a boolean
+       // if(counterForOne == 2 && counterForTwo == 2) {
+          //
+       // }
+        if(counterForOne === 2) {
+          resolve();
+        } else if(counterForTwo === 2) {
+          resolve();
+        }
+        
+        resolve();
     });
 
+        client2.on("turn-completed", 
+        (
+          playerOneHandObject: CardInterface[],
+          playerTwoHandObject: CardInterface[],
+          teamOneRoundsObject: number[],
+          teamTwoRoundsObject: number[],
+          gameBoardObject: CardInterface[],
+          playerTurnsObject: number[],
+        ) => {
+
+         // console.log("client2 turn completed");
+         // console.log('------------------------------');
+         // console.log(teamOneRoundsObject);
+         // console.log(teamTwoRoundsObject);
+         // console.log('------------------------------');
+         console.log(gameBoardObject);
+        // setTimeout(() => {
+          // expect(gameBoardObject).toEqual([]);
+          // resolve();
+
+        // }, 2000);
+      });
+    });
+    // Need to grab the current game that was created from the test before
+
+    await clientTwoTurnCardSent;
+  });
+
+  test("two players play a turn AGAIN", async () => {
     const roomNumber: number = 123;
     const player1: string = "anthony";
     const player2: string = "ofir1";
 
-    clientSocket.emit("join-room", roomNumber, player1);
+    let undefinedCheck1: boolean = false;
+    let undefinedCheck2: boolean = false;
 
-    setTimeout(() => {
-      clientSocket.emit("join-room", roomNumber, player2);
-      //done();
-    }, 1000);
-  }); */
-//});
+    let p1Hand: CardInterface[] = [];
+    let p2Hand: CardInterface[] = [];
+
+    let p1FirstCard: CardInterface = {};
+    let p2FirstCard: CardInterface = {};
+
+    let playerTurns: number[] = [];
+
+    //client1.emit("start-game", player1, player2, roomNumber);
+
+    const clientOneActionSent = new Promise<void>((resolve) => {
+      client1.emit("start-game", player1, player2, roomNumber);
+      
+      
+      client1.on("start-game-confirmed", 
+      (
+        deckObject: CardInterface[],
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        turnCardObject: CardInterface,
+        specialCardObject: CardInterface,
+        roundValueObject: number,
+        playerTurnObject: number[],
+        teamOneScoreObject: number,
+        teamTwoScoreObject: number,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
+
+      ) => {
+            //console.log("in client1");
+            console.log(deckObject);
+          expect(deckObject).toBeDefined();
+          expect(playerOneHandObject).toBeDefined();
+          expect(playerTwoHandObject).toBeDefined();
+          expect(turnCardObject).toBeDefined();
+          expect(specialCardObject).toBeDefined();
+          expect(roundValueObject).toBeDefined();
+          expect(playerTurnObject).toBeDefined();
+          expect(teamOneScoreObject).toBeDefined();
+          expect(teamTwoScoreObject).toBeDefined();
+          expect(teamOneRoundsObject).toBeDefined();
+          expect(teamTwoRoundsObject).toBeDefined();
+
+
+          p1FirstCard = playerOneHandObject.shift();
+          p2FirstCard = playerTwoHandObject.shift();
+
+         // p1FirstCard.turn = player1;
+         // p2FirstCard.turn = player2;
+
+          resolve();
+        });
+      });
+
+      await clientOneActionSent;
+    
+
+    const clientTwoActionSent = new Promise<void>((resolve) => {
+      client1.emit("turn-play-card", p1FirstCard, [-1, 0], roomNumber);
+
+      client1.on("winner-round", 
+        (
+          roundWinnerObject: string,
+          teamOneRoundsObject: number[],
+          teamTwoRoundsObject: number[],
+          playerOneObject: string,
+          playerTwoObject: string,
+          playerTurnsObject: number[],
+        ) => {
+          console.log("client1 winner round");
+          console.log(roundWinnerObject);
+
+          const t1Rounds = teamOneRoundsObject;
+          const t2Rounds = teamTwoRoundsObject;
+
+          let counterForOne = 0;
+          // checking for two zero's
+          
+          for(let i = 0; i < t1Rounds.length; i++) {
+            if(t1Rounds[i] === 0) {
+              counterForOne++;
+            }
+          }
+          
+          let counterForTwo = 0;
+
+          for(let i = 0; i < t2Rounds.length; i++) {
+            if(t2Rounds[i] === 0) {
+              counterForTwo++;
+            }
+          }
+            
+          if(counterForOne === 2) {
+            resolve();
+          } else if(counterForTwo === 2) {
+            resolve();
+          }
+          
+          resolve();
+      });
+
+      client1.on("turn-completed", 
+          (
+            playerOneHandObject: CardInterface[],
+            playerTwoHandObject: CardInterface[],
+            teamOneRoundsObject: number[],
+            teamTwoRoundsObject: number[],
+            gameBoardObject: CardInterface[],
+            playerTurnsObject: number[],
+          ) => {
+
+           // console.log("client1 turn completed");
+           // console.log('------------------------------');
+           // console.log(teamOneRoundsObject);
+           // console.log(teamTwoRoundsObject);
+           // console.log('------------------------------');
+            
+           
+            resolve();
+        });
+
+
+    });
+    // Need to grab the current game that was created from the test before
+
+    await clientTwoActionSent;
+    
+
+    const clientTwoTurnCardSent = new Promise<void>((resolve) => {
+    
+
+      setTimeout(() => {
+        client2.emit("turn-play-card", p2FirstCard, [0, -1], roomNumber);
+      }, 2000);
+
+      client2.on("winner-round", 
+      (
+        roundWinnerObject: string,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        playerTurnsObject: number[],
+      ) => {
+        console.log("client2 winner round");
+        console.log(roundWinnerObject);
+        console.log(teamOneRoundsObject);
+        console.log(teamTwoRoundsObject);
+
+        const t1Rounds = teamOneRoundsObject;
+        const t2Rounds = teamTwoRoundsObject;
+
+        let counterForOne = 0;
+        // checking for two zero's
+        
+        for(let i = 0; i < t1Rounds.length; i++) {
+          if(t1Rounds[i] === 0) {
+            counterForOne++;
+          }
+        }
+
+        
+        let counterForTwo = 0;
+
+        for(let i = 0; i < t2Rounds.length; i++) {
+          if(t2Rounds[i] === 0) {
+            counterForTwo++;
+          }
+        }
+
+        if(counterForOne === 2) {
+          resolve();
+        } else if(counterForTwo === 2) {
+          resolve();
+        }
+
+        resolve();
+    });
+
+        client2.on("turn-completed", 
+        (
+          playerOneHandObject: CardInterface[],
+          playerTwoHandObject: CardInterface[],
+          teamOneRoundsObject: number[],
+          teamTwoRoundsObject: number[],
+          gameBoardObject: CardInterface[],
+          playerTurnsObject: number[],
+        ) => {
+
+         // console.log("client2 turn completed");
+         // console.log('------------------------------');
+         // console.log(teamOneRoundsObject);
+         // console.log(teamTwoRoundsObject);
+         // console.log('------------------------------');
+         console.log(gameBoardObject);
+        // setTimeout(() => {
+          // expect(gameBoardObject).toEqual([]);
+          // resolve();
+
+        // }, 2000);
+      });
+    });
+    // Need to grab the current game that was created from the test before
+
+    await clientTwoTurnCardSent;
+  });
+  
+  
+
+  test("testing reset-next-turn with two players", async () => {
+    const roomNumber: number = 123;
+    const player1: string = "anthony";
+    const player2: string = "ofir1";
+
+    let undefinedCheck1: boolean = false;
+    let undefinedCheck2: boolean = false;
+
+    let p1Hand: CardInterface[] = [];
+    let p2Hand: CardInterface[] = [];
+
+    let p1FirstCard: CardInterface = {};
+    let p2FirstCard: CardInterface = {};
+
+    let playerTurns: number[] = [];
+
+    let t1Rounds = [];
+    let t2Rounds = [];
+
+    let counterForOne = 0;
+    let counterForTwo = 0;
+    // reset-next-turn (player/tie, roomNumber)
+    // When teamOneRoundsObject or teamTwoRoundsObject has 2 zeros.
+    const clientOneActionSent = new Promise<void>((resolve) => {
+      // Get current game thats on-going
+      client1.emit("start-game", player1, player2, roomNumber);
+
+      //client1.emit("reset-next-turn", player1, player2, roomNumber);
+      
+      
+      client1.on("start-game-confirmed", 
+      (
+        deckObject: CardInterface[],
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        playerOneObject: string,
+        playerTwoObject: string,
+        turnCardObject: CardInterface,
+        specialCardObject: CardInterface,
+        roundValueObject: number,
+        playerTurnObject: number[],
+        teamOneScoreObject: number,
+        teamTwoScoreObject: number,
+        teamOneRoundsObject: number[],
+        teamTwoRoundsObject: number[],
+
+      ) => {
+            //console.log("in client1");
+            console.log(deckObject);
+          expect(deckObject).toBeDefined();
+          expect(playerOneHandObject).toBeDefined();
+          expect(playerTwoHandObject).toBeDefined();
+          expect(turnCardObject).toBeDefined();
+          expect(specialCardObject).toBeDefined();
+          expect(roundValueObject).toBeDefined();
+          expect(playerTurnObject).toBeDefined();
+          expect(teamOneScoreObject).toBeDefined();
+          expect(teamTwoScoreObject).toBeDefined();
+          expect(teamOneRoundsObject).toBeDefined();
+          expect(teamTwoRoundsObject).toBeDefined();
+
+
+          t1Rounds = teamOneRoundsObject;
+          t2Rounds = teamTwoRoundsObject;
+
+          resolve();
+        });
+      });
+
+      await clientOneActionSent;
+
+      const clientOneWinnerActionSent = new Promise<void>((resolve) => {
+
+
+        client1.on("reset-completed", 
+            (
+              playerOneHandObject: CardInterface[],
+              playerTwoHandObject: CardInterface[],
+              turnCardObject: CardInterface,
+              specialCardObject: CardInterface,
+              teamOneScoreObject: number,
+              teamTwoScoreObject: number,
+              playerTurnsObject: number[],
+              roundValueObject: number,
+              teamOneRoundsObject: number[],
+              teamTwoRoundsObject: number[],
+            ) => {
+
+              console.log("client1 in reset-completed");
+
+              console.log(teamOneScoreObject);
+              console.log(teamTwoScoreObject);
+              resolve();
+        });
+
+        for(let i = 0; i < t1Rounds.length; i++) {
+          if(t1Rounds[i] === 0) {
+            counterForOne++;
+          }
+        }
+        
+        let counterForTwo = 0;
+
+        for(let i = 0; i < t2Rounds.length; i++) {
+          if(t2Rounds[i] === 0) {
+            counterForTwo++;
+          }
+        }
+          
+        if(counterForOne === 2) {
+          client1.emit("reset-next-turn", player1, roomNumber);
+          // resolve();
+        } else if(counterForTwo === 2) {
+          client1.emit("reset-next-turn", player2, roomNumber);
+         // resolve();
+        }
+
+
+      });
+
+      await clientOneWinnerActionSent;
+  }, 10000);
+
+
+  
+});
+
