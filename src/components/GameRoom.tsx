@@ -77,11 +77,21 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   const [acceptTruco, setAcceptTruco] = useState<boolean>(false);
 
   const [lastHandPlayerOne, setLastHandPlayerOne] = useState<boolean>(false);
+  const [threeClownsActivated, setThreeClownsActivated] = useState<boolean>(false);
+
+  // Three Clowns State
+  const [clownsCountClickedP1, setClownsCountClickedP1] = useState<boolean>(false);
+  const [clownsCountClickedP2, setClownsCountClickedP2] = useState<boolean>(false);
   // Refs
   const waiting = useRef<boolean>(false);
   const trucoPressed = useRef<boolean>(false);
   const lastHandShowdownOne = useRef<boolean>(false);
   const lastHandShowdownTwo = useRef<boolean>(false);
+  const threeClownsPressed = useRef<boolean>(false);
+
+    /* --------START------------
+          Truco Logic here 
+     --------START------------*/
 
   const trucoClicked = (player: string, number: number) => {
     // setAcceptTruco(true);
@@ -107,6 +117,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     // setRoundValue(1);
   };
 
+      /* --------END------------
+          Truco Logic here 
+        --------END------------*/
+
   /* --------START------------
      Last Hand Logic here 
      --------START------------*/
@@ -124,7 +138,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     }
     socket.emit("last-hand-before-winning", player, number, true, false);
   }
-
+  // Case: Declines to play, but doesn't have to play the next hand.. call last hand again
   const lastHandDeclined = (player: string, number: number) => {
     if(p1 === player) {
       console.log(`Player 1 is making the decision......`);
@@ -141,6 +155,54 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     /* --------END------------
      Last Hand Logic 
      --------END------------*/
+
+    /* --------START------------
+          Three Clowns Logic 
+     --------START------------*/
+
+  const threeClownsClicked = (player: string, number: number) => {
+
+      if(p1 === player) {
+        setClownsCountClickedP1(true);
+      } else if(p2 === player) {
+        setClownsCountClickedP2(true);
+      }
+  
+      threeClownsPressed.current = true;
+      socket.emit("3-clowns-clicked", player, number, false, false);
+    }
+    
+    const clickedAcceptClowns = (player: string, number: number) => {
+      if(p1 === player) {
+        setClownsCountClickedP1(true);
+      } else if(p2 === player) {
+        setClownsCountClickedP2(true);
+      }
+      threeClownsPressed.current = false;
+     // setAcceptClown(true);
+      socket.emit("3-clowns-clicked", player, number, true, false);
+      // socket.emit("truco-accepted", )
+      //  socket.emit("truco-clicked", player, roomNumber, true, false)
+    }
+    
+    const clickedDeclineClowns = (player: string, number: number) => {
+      if(p1 === player) {
+        setClownsCountClickedP1(true);
+      } else if(p2 === player) {
+        setClownsCountClickedP2(true);
+      }
+      threeClownsPressed.current = false;
+      
+     // setAcceptClown(false);
+      socket.emit("3-clowns-clicked", player, number, false, true);
+      // setDeclineTruco(!declineTruco);
+     // socket.emit("truco-clicked", player, roomNumber, false, true);
+      // setRoundValue(1);
+    }
+
+        /* --------END------------
+              Three Clowns Logic 
+          --------END------------*/
 
 
   const decideTurn = (playerTurns: number[]) => {
@@ -666,6 +728,17 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
      // socket.emit("-before-winning", )
     });
 
+    socket.on("3-clowns-called", (player: string) => {
+      console.log("Three Clowns called");
+      if(player === p1) {
+        setClownsCountClickedP1(true);
+      } else if(player === p2) {
+        setClownsCountClickedP2(true);
+      }
+
+      //threeClownsPressed.current = true;
+      setThreeClownsActivated(true);
+    });
     
 
     socket.on("last-hand-accepted", (roundValue: number, player: string) => {
@@ -690,6 +763,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("truco-declined");
       socket.off("score-threshold");
       socket.off("last-hand-accepted");
+      socket.off("3-clowns-called");
     };
   }, [socket]);
   return (
@@ -797,6 +871,12 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 clickedDeclineLastHand={lastHandDeclined}
                 lastHandRefPlayerOne={lastHandPlayerOne}
                 lastHandRefPlayerTwo={lastHandShowdownTwo.current}
+                clickedAcceptThreeClowns={clickedAcceptClowns}
+                clickedDeclineThreeClowns={clickedDeclineClowns}
+                threeClownsClicked={threeClownsClicked}
+                threeClownsRef={threeClownsActivated}
+                threeClownsClickedPlayerOne={clownsCountClickedP1}
+                threeClownsClickedPlayerTwo={clownsCountClickedP2}
               />
             </div>
           </>

@@ -4,7 +4,9 @@ import Button from "@mui/material/Button";
 import "../styles/PlayerStack.css";
 
 import TrucoContainer from './TrucoContainer';
+import ThreeClownsContainer from './ThreeClownsContainer';
 import LastHandContainer from './LastHandContainer';
+
 
 interface Props {
   className: string;
@@ -28,6 +30,12 @@ interface Props {
   clickedDeclineLastHand: (player: string, number: number) => void;
   lastHandRefPlayerOne: boolean;
   lastHandRefPlayerTwo: boolean;
+  clickedAcceptThreeClowns: (player: string, number: number) => void;
+  clickedDeclineThreeClowns: (player: string, number: number) => void;
+  threeClownsClicked: (player: string, number: number) => void;
+  threeClownsRef: boolean;
+  threeClownsClickedPlayerOne: boolean;
+  threeClownsClickedPlayerTwo: boolean;
 }
 
 const PlayerStack = ({
@@ -49,6 +57,12 @@ const PlayerStack = ({
   clickedDeclineLastHand,
   lastHandRefPlayerOne,
   lastHandRefPlayerTwo,
+  clickedAcceptThreeClowns,
+  clickedDeclineThreeClowns,
+  threeClownsClicked,
+  threeClownsRef,
+  threeClownsClickedPlayerOne,
+  threeClownsClickedPlayerTwo,
 }: Props) => {
   if (user === null) return null;
 
@@ -76,10 +90,20 @@ const PlayerStack = ({
               Truco
             </Button>
 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                threeClownsClicked(p1, roomNumber);
+              }}
+            >
+              Three Clowns
+            </Button>
+
           </div>
 
           {
-          trucoPressedRef === true 
+          trucoPressedRef === true  || threeClownsRef === true
           ?
           <>
           {disableShowHandFunction(hand, p1)}
@@ -125,6 +149,19 @@ const PlayerStack = ({
             declineClicked={clickedDeclineTruco}
             player={p1}
          />
+         {
+          threeClownsRef === true 
+          ?
+          <ThreeClownsContainer 
+             show={threeClownsRef === true}
+             rNumber={roomNumber}
+             acceptClicked={clickedAcceptThreeClowns}
+             declineClicked={clickedDeclineThreeClowns}
+             player={p1}
+          />
+          :
+          <></>
+          }
 
 
         {disableShowHandFunction(hand, player)}
@@ -142,6 +179,20 @@ const PlayerStack = ({
             declineClicked={clickedDeclineTruco}
             player={p2}
          />
+
+          {
+          threeClownsRef === true 
+          ?
+          <ThreeClownsContainer 
+             show={threeClownsRef === true}
+             rNumber={roomNumber}
+             acceptClicked={clickedAcceptThreeClowns}
+             declineClicked={clickedDeclineThreeClowns}
+             player={p1}
+          />
+          :
+          <></>
+          }
         {disableShowHandFunction(hand, player)}
         </>
       ) : (
@@ -162,8 +213,18 @@ const PlayerStack = ({
             </Button>
           </div>
 
+          <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                threeClownsClicked(p2, roomNumber);
+              }}
+            >
+              Three Clowns
+          </Button>
+
           {
-          trucoPressedRef === true || lastHandRefPlayerTwo === true
+          trucoPressedRef === true || threeClownsRef === true
           ?
           <>
           {disableShowHandFunction(hand, p2)}
