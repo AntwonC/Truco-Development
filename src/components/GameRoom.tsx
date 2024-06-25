@@ -78,6 +78,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   // Refs
   const waiting = useRef<boolean>(false);
   const trucoPressed = useRef<boolean>(false);
+  const lastHandShowdownOne = useRef<boolean>(false);
+  const lastHandShowdownTwo = useRef<boolean>(false);
 
   const trucoClicked = (player: string, number: number) => {
     // setAcceptTruco(true);
@@ -100,6 +102,37 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     socket.emit("truco-clicked", player, roomNumber, false, true);
     // setRoundValue(1);
   };
+
+  /* --------START------------
+     Last Hand Logic here 
+     --------START------------*/
+  const lastHandAccepted = (player: string, number: number) => {
+    
+    if(p1 === player) {
+      console.log(`Player 1 is making the decision...`);
+      lastHandShowdownOne.current = false;
+    } else if(p2 === player) {
+      console.log(`Player 2 is making the decision...`);
+      lastHandShowdownTwo.current = false;
+    }
+    socket.emit("last-hand-before-winning", player, number, true, false);
+  }
+
+  const lastHandDeclined = (player: string, number: number) => {
+    if(p1 === player) {
+      console.log(`Player 1 is making the decision......`);
+      lastHandShowdownOne.current = false;
+    } else if(p2 === player) {
+      console.log(`Player 2 is making the decision......`);
+      lastHandShowdownTwo.current = false;
+    }
+
+    socket.emit("last-hand-before-winning", player, number, false, true);
+  }
+    /* --------END------------
+     Last Hand Logic 
+     --------END------------*/
+
 
   const decideTurn = (playerTurns: number[]) => {
     // [-1, 0]
@@ -597,6 +630,39 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       setPlayerTurn([...playerTurnsObject]);
     });
 
+    socket.on("score-threshold", 
+      (
+        player: string,
+        beforeWinningScore: number, 
+        t1Score: number, 
+        t2Score: number,
+      ) => {
+      console.log("Score-threshold being called!");
+
+      console.log(`t1Score: ${t1Score}`);
+      console.log(`t2Score: ${t2Score}`);
+      console.log(`beforeWinningScore: ${beforeWinningScore}`);
+      console.log(`player: ${player}`);
+
+      if(beforeWinningScore === t1Score) {
+        lastHandShowdownOne.current = true;
+      } else if(beforeWinningScore === t2Score) {
+        lastHandShowdownTwo.current = true;
+      }
+     // socket.emit("last-hand-before-winning", )
+    });
+
+    
+
+    socket.on("last-hand-accepted", (roundValue: number, player: string) => {
+      console.log("inside last-hand-accepted");
+      setRoundValue(roundValue);
+
+      lastHandShowdownOne.current = false;
+      lastHandShowdownTwo.current = false;
+
+    });
+
     return () => {
       socket.off("room-success");
       socket.off("start-game-confirmed");
@@ -607,6 +673,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("waiting-game-board-finished");
       socket.off("truco-called");
       socket.off("truco-declined");
+      socket.off("score-threshold");
     };
   }, [socket]);
   return (
@@ -710,6 +777,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 clickedAcceptTruco={clickedAcceptTruco}
                 clickedDeclineTruco={clickedDeclineTruco}
                 trucoPressedRef={trucoPressed.current}
+                clickedAcceptLastHand={lastHandAccepted}
+                clickedDeclineLastHand={lastHandDeclined}
+                lastHandRefPlayerOne={lastHandShowdownOne.current}
+                lastHandRefPlayerTwo={lastHandShowdownTwo.current}
               />
             </div>
           </>

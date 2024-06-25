@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import "../styles/PlayerStack.css";
 
 import TrucoContainer from './TrucoContainer';
+import LastHandContainer from './LastHandContainer';
 
 interface Props {
   className: string;
@@ -23,6 +24,10 @@ interface Props {
   clickedAcceptTruco: (player: string, number: number) => void;
   clickedDeclineTruco: (player: string, number: number) => void;
   trucoPressedRef: boolean;
+  clickedAcceptLastHand: (player: string, number: number) => void;
+  clickedDeclineLastHand: (player: string, number: number) => void;
+  lastHandRefPlayerOne: boolean;
+  lastHandRefPlayerTwo: boolean;
 }
 
 const PlayerStack = ({
@@ -40,6 +45,10 @@ const PlayerStack = ({
   clickedAcceptTruco,
   clickedDeclineTruco,
   trucoPressedRef,
+  clickedAcceptLastHand,
+  clickedDeclineLastHand,
+  lastHandRefPlayerOne,
+  lastHandRefPlayerTwo,
 }: Props) => {
   if (user === null) return null;
 
@@ -66,10 +75,11 @@ const PlayerStack = ({
             >
               Truco
             </Button>
+
           </div>
 
           {
-          trucoPressedRef === true 
+          trucoPressedRef === true || lastHandRefPlayerOne === true
           ?
           <>
           {disableShowHandFunction(hand, p1)}
@@ -79,6 +89,25 @@ const PlayerStack = ({
           {showHandFunction(hand)}
           </>
           }
+
+          {lastHandRefPlayerOne === true 
+          ?
+          <>
+          <LastHandContainer
+            show={lastHandRefPlayerOne}
+            rNumber={roomNumber}
+            acceptClicked={clickedAcceptLastHand}
+            declineClicked={clickedDeclineLastHand}
+            player={p1}
+          />
+          
+          </>
+          :
+          <>
+          </>
+          }
+
+
         </>
       ) : (
         <></>
@@ -94,6 +123,8 @@ const PlayerStack = ({
             declineClicked={clickedDeclineTruco}
             player={p1}
          />
+
+
         {disableShowHandFunction(hand, player)}
         </>
       ) : (
@@ -130,7 +161,7 @@ const PlayerStack = ({
           </div>
 
           {
-          trucoPressedRef === true 
+          trucoPressedRef === true || lastHandRefPlayerTwo === true
           ?
           <>
           {disableShowHandFunction(hand, p2)}
@@ -138,6 +169,23 @@ const PlayerStack = ({
           :
           <>
           {showHandFunction(hand)}
+          </>
+          }
+
+          {lastHandRefPlayerTwo === true 
+          ?
+          <>
+          <LastHandContainer
+            show={lastHandRefPlayerTwo}
+            rNumber={roomNumber}
+            acceptClicked={clickedAcceptLastHand}
+            declineClicked={clickedDeclineLastHand}
+            player={p2}
+          />
+          
+          </>
+          :
+          <>
           </>
           }
         </>
