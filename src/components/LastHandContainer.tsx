@@ -24,7 +24,7 @@ const LastHandContainer = ({ show, rNumber, acceptClicked, declineClicked, playe
         >
           Success
         </Button>
-        
+
         <Button
           type="button"
           variant="contained"

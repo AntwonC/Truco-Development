@@ -79,7 +79,7 @@ const PlayerStack = ({
           </div>
 
           {
-          trucoPressedRef === true || lastHandRefPlayerOne === true
+          trucoPressedRef === true 
           ?
           <>
           {disableShowHandFunction(hand, p1)}
@@ -89,6 +89,8 @@ const PlayerStack = ({
           {showHandFunction(hand)}
           </>
           }
+
+
 
           {lastHandRefPlayerOne === true 
           ?

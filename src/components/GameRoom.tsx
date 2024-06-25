@@ -75,6 +75,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
   // Truco State
   const [acceptTruco, setAcceptTruco] = useState<boolean>(false);
+
+  const [lastHandPlayerOne, setLastHandPlayerOne] = useState<boolean>(false);
   // Refs
   const waiting = useRef<boolean>(false);
   const trucoPressed = useRef<boolean>(false);
@@ -98,6 +100,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     console.log("trucoPressed....");
     console.log(trucoPressed.current);
     setAcceptTruco(false);
+
+    
     // setDeclineTruco(!declineTruco);
     socket.emit("truco-clicked", player, roomNumber, false, true);
     // setRoundValue(1);
@@ -110,9 +114,12 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     
     if(p1 === player) {
       console.log(`Player 1 is making the decision...`);
-      lastHandShowdownOne.current = false;
+      //lastHandShowdownOne.current = false;
+      trucoPressed.current = false; //.this solves problem of being stuck with not clickable cards b/c game thinks its truco round, but is really last hand truco round
+      setLastHandPlayerOne(false);
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision...`);
+   //   trucoPressed.current = false;
       lastHandShowdownTwo.current = false;
     }
     socket.emit("last-hand-before-winning", player, number, true, false);
@@ -121,7 +128,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   const lastHandDeclined = (player: string, number: number) => {
     if(p1 === player) {
       console.log(`Player 1 is making the decision......`);
-      lastHandShowdownOne.current = false;
+    //  lastHandShowdownOne.current = false;
+      setLastHandPlayerOne(false);
+      trucoPressed.current = false;
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision......`);
       lastHandShowdownTwo.current = false;
@@ -645,11 +654,16 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       console.log(`player: ${player}`);
 
       if(beforeWinningScore === t1Score) {
-        lastHandShowdownOne.current = true;
+        //lastHandShowdownOne.current = true;
+        setLastHandPlayerOne(true);
       } else if(beforeWinningScore === t2Score) {
+        //setLastHandPlayerOne(true);
         lastHandShowdownTwo.current = true;
       }
-     // socket.emit("last-hand-before-winning", )
+
+      setT1Score(t1Score);
+      setT2Score(t2Score);
+     // socket.emit("-before-winning", )
     });
 
     
@@ -658,7 +672,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       console.log("inside last-hand-accepted");
       setRoundValue(roundValue);
 
-      lastHandShowdownOne.current = false;
+      setLastHandPlayerOne(false);
+    //  lastHandShowdownOne.current = false;
       lastHandShowdownTwo.current = false;
 
     });
@@ -674,6 +689,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("truco-called");
       socket.off("truco-declined");
       socket.off("score-threshold");
+      socket.off("last-hand-accepted");
     };
   }, [socket]);
   return (
@@ -779,7 +795,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 trucoPressedRef={trucoPressed.current}
                 clickedAcceptLastHand={lastHandAccepted}
                 clickedDeclineLastHand={lastHandDeclined}
-                lastHandRefPlayerOne={lastHandShowdownOne.current}
+                lastHandRefPlayerOne={lastHandPlayerOne}
                 lastHandRefPlayerTwo={lastHandShowdownTwo.current}
               />
             </div>
