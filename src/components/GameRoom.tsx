@@ -13,6 +13,7 @@ import Card from "../components/Card";
 import CardInterface from "../interfaces/CardInterface";
 
 import "../styles/GameRoom.css";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 interface Props {
   socket: Socket;
@@ -82,6 +83,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   // Three Clowns State
   const [clownsCountClickedP1, setClownsCountClickedP1] = useState<boolean>(false);
   const [clownsCountClickedP2, setClownsCountClickedP2] = useState<boolean>(false);
+
+  const [revealHandP1, setRevealHandP1] = useState<boolean>(false);
+  const [revealHandP2, setRevealHandP2] = useState<boolean>(false);
   // Refs
   const waiting = useRef<boolean>(false);
   const trucoPressed = useRef<boolean>(false);
@@ -161,26 +165,40 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
      --------START------------*/
 
   const threeClownsClicked = (player: string, number: number) => {
+    console.log("Three clowns clicked");
+    console.log(player);
 
       if(p1 === player) {
+        console.log(`3 clowns player one => ${p1}`);
         setClownsCountClickedP1(true);
+        threeClownsPressed.current = true;
+        socket.emit("3-clowns-clicked", p1, number, false, false);
+        return;
       } else if(p2 === player) {
+        console.log(`3 clowns player two => ${p2}`);
         setClownsCountClickedP2(true);
+        threeClownsPressed.current = true;
+        socket.emit("3-clowns-clicked", p2, number, false, false);
+        return;
       }
   
-      threeClownsPressed.current = true;
-      socket.emit("3-clowns-clicked", player, number, false, false);
     }
     
     const clickedAcceptClowns = (player: string, number: number) => {
+      console.log(`${player} <= in clickedAcceptClowns`);
       if(p1 === player) {
         setClownsCountClickedP1(true);
+        setThreeClownsActivated(false);
+        socket.emit("3-clowns-clicked", p1, number, true, false);
+        return;
       } else if(p2 === player) {
         setClownsCountClickedP2(true);
+        setThreeClownsActivated(false);
+        socket.emit("3-clowns-clicked", p2, number, true, false);
+        return;
       }
-      threeClownsPressed.current = false;
+     // threeClownsPressed.current = false;
      // setAcceptClown(true);
-      socket.emit("3-clowns-clicked", player, number, true, false);
       // socket.emit("truco-accepted", )
       //  socket.emit("truco-clicked", player, roomNumber, true, false)
     }
@@ -264,12 +282,104 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     );
   };
 
+  const disableClickRevealHandTwo = 
+  (
+    playerHand: CardInterface[],
+    revealHandOneState: boolean,
+    revealHandTwoState: boolean,
+  ) => {
+    if(revealHandOneState) {
+      return (
+        <div className="player-cards">
+          {playerHand.map((element) => {
+            if (element.suit === null || element.rank === null) {
+              return;
+            }
+            return (
+              <Card
+                suit={element.suit}
+                rank={element.rank}
+                key={element.key}
+                click={true}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+    return (
+      <div className="player-cards">
+        {playerHand.map((element) => {
+          if (element.suit === null || element.rank === null) {
+            return;
+          }
+          return (
+            <Card
+              suit={element.suit}
+              rank={element.rank}
+              key={element.key}
+              click={false}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+  
+  const disableClickRevealHand = 
+  (
+    playerHand: CardInterface[],
+    revealHandOneState: boolean,
+    revealHandTwoState: boolean,
+  )  => {
+    if(revealHandTwoState) {
+      return (
+        <div className="player-cards">
+          {playerHand.map((element) => {
+            if (element.suit === null || element.rank === null) {
+              return;
+            }
+            return (
+              <Card
+                suit={element.suit}
+                rank={element.rank}
+                key={element.key}
+                click={true}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
+    return (
+      <div className="player-cards">
+        {playerHand.map((element) => {
+          if (element.suit === null || element.rank === null) {
+            return;
+          }
+          return (
+            <Card
+              suit={element.suit}
+              rank={element.rank}
+              key={element.key}
+              click={false}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+
   const disableClickShowHand = (
     playerHand: CardInterface[],
     player: string,
+
   ) => {
     console.log(`in disbleClick: ${player}`);
-    if (player === user) {
+    console.log(`user => ${user}`);
+
+    if(player === user) {
       return (
         <div className="player-cards">
           {playerHand.map((element) => {
@@ -609,6 +719,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
         // setRenderAgain(false);
 
+        setRevealHandP1(false);
+        setRevealHandP2(false);
+
         setRoundValue(roundValueVariable);
         // To have delay to show how many rounds each team/player won
         setTimeout(() => {
@@ -739,6 +852,66 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       //threeClownsPressed.current = true;
       setThreeClownsActivated(true);
     });
+
+    socket.on("3-clowns-accepted-best-outcome", 
+      (
+        player: string, 
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        t1ScoreObject: number,
+        t2ScoreObject: number,
+
+      ) => {
+
+        console.log(`3 clowns accepted best outcome`);
+        console.log(player);
+        if(player === p1) {
+          setP1Hand([]);
+  
+          setP1Hand([...playerOneHandObject]);
+  
+          setT1Score(t1ScoreObject);
+          setT2Score(t2ScoreObject);
+
+        } else if(player === p2) {
+          setP2Hand([]);
+  
+          setP2Hand([...playerTwoHandObject]);
+  
+          setT1Score(t1ScoreObject);
+          setT2Score(t2ScoreObject);
+        }
+
+        setThreeClownsActivated(false);
+
+
+    });
+
+    socket.on("3-clowns-accepted-worst-outcome", 
+      (
+        player: string, 
+        t1Score: number, 
+        t2Score: number, 
+        outcome: number
+      ) => {
+
+      setT1Score(t1Score);
+      setT2Score(t2Score);
+      
+      console.log(`3 clowns accepted worst outcome player => ${player}`);
+        
+      console.log(`outcome => ${outcome}`);
+
+      if(outcome === 2) {
+        setRevealHandP1(true);
+      } else {
+        setRevealHandP2(true);
+
+      }
+
+      setThreeClownsActivated(false);
+
+    });
     
 
     socket.on("last-hand-accepted", (roundValue: number, player: string) => {
@@ -764,6 +937,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("score-threshold");
       socket.off("last-hand-accepted");
       socket.off("3-clowns-called");
+      socket.off("3-clowns-accepted-worst-outcome");
+      socket.off("3-clowns-accepted-best-outcome");
     };
   }, [socket]);
   return (
@@ -848,6 +1023,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 turn={playerTurn}
                 p1={p1}
                 p2={p2}
+                revealHandPlayerOne={revealHandP1}
+                revealHandPlayerTwo={revealHandP2}
+                disableClickRevealHandFunction={disableClickRevealHand}
+                disableClickRevealHandFunctionTwo={disableClickRevealHandTwo}
               />
             </div>
 
@@ -877,6 +1056,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 threeClownsRef={threeClownsActivated}
                 threeClownsClickedPlayerOne={clownsCountClickedP1}
                 threeClownsClickedPlayerTwo={clownsCountClickedP2}
+                revealHandPlayerOne={revealHandP1}
+                revealHandPlayerTwo={revealHandP2}
+                playerOneHandObject={p1Hand}
+                playerTwoHandObject={p2Hand}
               />
             </div>
           </>

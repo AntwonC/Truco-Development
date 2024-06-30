@@ -19,8 +19,9 @@ const ThreeClownsContainer = ({ show, rNumber, acceptClicked, declineClicked, pl
           type="button"
           variant="contained"
           onClick={() => {
-            //acceptClicked(player, rNumber);
+            acceptClicked(player, rNumber);
           }}
+          
         >
           Success
         </Button>

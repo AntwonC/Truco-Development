@@ -36,6 +36,10 @@ interface Props {
   threeClownsRef: boolean;
   threeClownsClickedPlayerOne: boolean;
   threeClownsClickedPlayerTwo: boolean;
+  revealHandPlayerOne: boolean;
+  revealHandPlayerTwo: boolean;
+  playerOneHandObject: CardInterface[];
+  playerTwoHandObject: CardInterface[];
 }
 
 const PlayerStack = ({
@@ -63,6 +67,10 @@ const PlayerStack = ({
   threeClownsRef,
   threeClownsClickedPlayerOne,
   threeClownsClickedPlayerTwo,
+  revealHandPlayerOne,
+  revealHandPlayerTwo,
+  playerOneHandObject,
+  playerTwoHandObject,
 }: Props) => {
   if (user === null) return null;
 
@@ -96,6 +104,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p1, roomNumber);
               }}
+              disabled={(playerOneHandObject.length < 3) ? true : false}
             >
               Three Clowns
             </Button>
@@ -103,7 +112,7 @@ const PlayerStack = ({
           </div>
 
           {
-          trucoPressedRef === true  || threeClownsRef === true
+          trucoPressedRef === true  || threeClownsRef === true || lastHandRefPlayerOne === true
           ?
           <>
           {disableShowHandFunction(hand, p1)}
@@ -188,7 +197,7 @@ const PlayerStack = ({
              rNumber={roomNumber}
              acceptClicked={clickedAcceptThreeClowns}
              declineClicked={clickedDeclineThreeClowns}
-             player={p1}
+             player={p2}
           />
           :
           <></>
@@ -219,12 +228,13 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p2, roomNumber);
               }}
+              disabled={(playerTwoHandObject.length < 3) ? true : false}
             >
               Three Clowns
           </Button>
 
           {
-          trucoPressedRef === true || threeClownsRef === true
+          trucoPressedRef === true || threeClownsRef === true || lastHandRefPlayerTwo === true
           ?
           <>
           {disableShowHandFunction(hand, p2)}

@@ -13,6 +13,18 @@ interface Props {
   turn: number[];
   p1: string;
   p2: string;
+  revealHandPlayerOne: boolean;
+  revealHandPlayerTwo: boolean;
+  disableClickRevealHandFunction: (
+    hand: CardInterface[],
+    revealHandStateOne: boolean,
+    revealHandStateTwo: boolean,
+  ) => ReactElement | undefined;
+  disableClickRevealHandFunctionTwo: (
+    hand: CardInterface[],
+    revealHandStateOne: boolean,
+    revealHandStateTwo: boolean,
+  ) => ReactElement | undefined;
 }
 
 const TopStack = ({
@@ -24,6 +36,10 @@ const TopStack = ({
   turn,
   p1,
   p2,
+  revealHandPlayerOne,
+  revealHandPlayerTwo,
+  disableClickRevealHandFunction,
+  disableClickRevealHandFunctionTwo,
 }: Props) => {
   if (user === null) return null;
   console.log(`in topStack: ${user}`);
@@ -32,13 +48,37 @@ const TopStack = ({
     <div className={className}>
       {user}
 
-      {turn[0] === -1 || turn[1] === -1 ? (
-        <>{disableShowHandFunction(hand, player)}</>
-      ) : (
-        <></>
-      )}
+      {user === p1
+      ?
+      <>
+      {disableClickRevealHandFunction(hand, revealHandPlayerOne, revealHandPlayerTwo)}
+      </>
+      :
+      <></>
+      }
+
+      {user === p2
+      ?
+      <>
+      {disableClickRevealHandFunctionTwo(hand, revealHandPlayerOne, revealHandPlayerTwo)}
+      </>
+      :
+      <></>
+      }
+
+      
+
     </div>
   );
 };
 
 export default TopStack;
+
+/* 
+
+      {turn[0] === -1 || turn[1] === -1 ? (
+        <>{disableShowHandFunction(hand, player, revealHandPlayerOne, revealHandPlayerTwo)}</>
+      ) : (
+        <></>
+      )}
+*/
