@@ -30,7 +30,7 @@ const ThreeClownsContainer = ({ show, rNumber, acceptClicked, declineClicked, pl
           type="button"
           variant="contained"
           onClick={() => {
-            // declineClicked(player, rNumber);
+             declineClicked(player, rNumber);
           }}
         >
           Danger

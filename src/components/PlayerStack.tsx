@@ -104,7 +104,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p1, roomNumber);
               }}
-              disabled={(playerOneHandObject.length < 3) ? true : false}
+              disabled={(playerOneHandObject.length < 3 || threeClownsClickedPlayerOne) ? true : false}
             >
               Three Clowns
             </Button>
@@ -228,7 +228,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p2, roomNumber);
               }}
-              disabled={(playerTwoHandObject.length < 3) ? true : false}
+              disabled={(playerTwoHandObject.length < 3 || threeClownsClickedPlayerTwo) ? true : false}
             >
               Three Clowns
           </Button>

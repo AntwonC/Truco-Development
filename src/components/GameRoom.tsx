@@ -163,11 +163,13 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     /* --------START------------
           Three Clowns Logic 
      --------START------------*/
-
+  // TO FIX: When the other player declines 3 clowns, the player hand doesn't change right away, but rather have to use the turn to go to render the next hand,
+  // find a way to change the hands when given the new data, (08/01/24)
   const threeClownsClicked = (player: string, number: number) => {
     console.log("Three clowns clicked");
     console.log(player);
-
+    // NOTE: 08/01/24 => Setting the clownsClicked to "true" made only able to click it once happen, do not change unless you understand. I will figure it out later.
+    
       if(p1 === player) {
         console.log(`3 clowns player one => ${p1}`);
         setClownsCountClickedP1(true);
@@ -187,12 +189,12 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     const clickedAcceptClowns = (player: string, number: number) => {
       console.log(`${player} <= in clickedAcceptClowns`);
       if(p1 === player) {
-        setClownsCountClickedP1(true);
+     //   setClownsCountClickedP1(true);
         setThreeClownsActivated(false);
         socket.emit("3-clowns-clicked", p1, number, true, false);
         return;
       } else if(p2 === player) {
-        setClownsCountClickedP2(true);
+      //  setClownsCountClickedP2(true);
         setThreeClownsActivated(false);
         socket.emit("3-clowns-clicked", p2, number, true, false);
         return;
@@ -205,14 +207,19 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     
     const clickedDeclineClowns = (player: string, number: number) => {
       if(p1 === player) {
-        setClownsCountClickedP1(true);
+       // setClownsCountClickedP1(true);
+        setThreeClownsActivated(false);
+        socket.emit("3-clowns-clicked", p1, number, false, true);
+        return;
       } else if(p2 === player) {
-        setClownsCountClickedP2(true);
+        //setClownsCountClickedP2(true);
+        setThreeClownsActivated(false);
+        socket.emit("3-clowns-clicked", p2, number, false, true);
+        return;
       }
-      threeClownsPressed.current = false;
+     // threeClownsPressed.current = false;
       
      // setAcceptClown(false);
-      socket.emit("3-clowns-clicked", player, number, false, true);
       // setDeclineTruco(!declineTruco);
      // socket.emit("truco-clicked", player, roomNumber, false, true);
       // setRoundValue(1);
@@ -325,7 +332,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       </div>
     );
   };
-  
+  // Is actually the opposite, I want to reveal hand for user that accepts/decline
   const disableClickRevealHand = 
   (
     playerHand: CardInterface[],
@@ -370,7 +377,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       </div>
     );
   };
-
+  // Is actually the opposite, I want to reveal hand for user that accepts/decline
   const disableClickShowHand = (
     playerHand: CardInterface[],
     player: string,
@@ -714,8 +721,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         // revealPlayerOneHand.current = false;
         // revealPlayerTwoHand.current = false;
 
-        // setClownsCountClickedP1(false);
-        // setClownsCountClickedP2(false);
+         setClownsCountClickedP1(false);
+         setClownsCountClickedP2(false);
 
         // setRenderAgain(false);
 
@@ -853,6 +860,19 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       setThreeClownsActivated(true);
     });
 
+    socket.on("3-clowns-called-already", (player: string, numberOfCalls: number) => {
+
+      console.log(`in 3-clowns-called => player => ${player}`);
+      console.log(numberOfCalls);
+
+      if(player === p1) {
+        setClownsCountClickedP1(true);
+      } else if(player === p2) {
+        setClownsCountClickedP2(true);
+      }
+
+    });
+
     socket.on("3-clowns-accepted-best-outcome", 
       (
         player: string, 
@@ -911,6 +931,26 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
       setThreeClownsActivated(false);
 
+    });
+
+    socket.on("3-clowns-declined", 
+      (
+        playerOneHandObject: CardInterface[],
+        playerTwoHandObject: CardInterface[],
+        player: string,
+      ) => {
+      
+      if(player === p1) {
+        setP2Hand([]);
+
+        setP2Hand([...playerTwoHandObject]);
+      } else if(player === p2) {
+        setP1Hand([]);
+        setP1Hand([...playerOneHandObject]);
+      }
+
+      setThreeClownsActivated(false);
+        
     });
     
 
