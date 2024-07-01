@@ -40,6 +40,7 @@ interface Props {
   revealHandPlayerTwo: boolean;
   playerOneHandObject: CardInterface[];
   playerTwoHandObject: CardInterface[];
+  gameBoardWaitingRef: boolean;
 }
 
 const PlayerStack = ({
@@ -71,6 +72,7 @@ const PlayerStack = ({
   revealHandPlayerTwo,
   playerOneHandObject,
   playerTwoHandObject,
+  gameBoardWaitingRef,
 }: Props) => {
   if (user === null) return null;
 
@@ -94,6 +96,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p1, roomNumber);
               }}
+              disabled={(lastHandRefPlayerOne === true) ? true : false}
             >
               Truco
             </Button>
@@ -104,7 +107,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p1, roomNumber);
               }}
-              disabled={(playerOneHandObject.length < 3 || threeClownsClickedPlayerOne) ? true : false}
+              disabled={(playerOneHandObject.length < 3 || threeClownsClickedPlayerOne || lastHandRefPlayerOne) ? true : false}
             >
               Three Clowns
             </Button>
@@ -112,7 +115,7 @@ const PlayerStack = ({
           </div>
 
           {
-          trucoPressedRef === true  || threeClownsRef === true || lastHandRefPlayerOne === true
+          trucoPressedRef === true  || threeClownsRef === true || lastHandRefPlayerOne === true || gameBoardWaitingRef
           ?
           <>
           {disableShowHandFunction(hand, p1)}
@@ -217,6 +220,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p2, roomNumber);
               }}
+              disabled={(lastHandRefPlayerTwo === true) ? true : false}
             >
               Truco
             </Button>
@@ -228,13 +232,13 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p2, roomNumber);
               }}
-              disabled={(playerTwoHandObject.length < 3 || threeClownsClickedPlayerTwo) ? true : false}
+              disabled={(playerTwoHandObject.length < 3 || threeClownsClickedPlayerTwo || lastHandRefPlayerTwo) ? true : false}
             >
               Three Clowns
           </Button>
 
           {
-          trucoPressedRef === true || threeClownsRef === true || lastHandRefPlayerTwo === true
+          trucoPressedRef === true || threeClownsRef === true || lastHandRefPlayerTwo === true || gameBoardWaitingRef
           ?
           <>
           {disableShowHandFunction(hand, p2)}

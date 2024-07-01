@@ -107,7 +107,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     trucoPressed.current = false;
     setAcceptTruco(false);
     // socket.emit("truco-accepted", )
-    socket.emit("truco-clicked", player, roomNumber, true, false);
+    socket.emit("truco-clicked", player, number, true, false);
   };
   const clickedDeclineTruco = (player: string, number: number) => {
     trucoPressed.current = false;
@@ -117,7 +117,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
     
     // setDeclineTruco(!declineTruco);
-    socket.emit("truco-clicked", player, roomNumber, false, true);
+    socket.emit("truco-clicked", player, number, false, true);
     // setRoundValue(1);
   };
 
@@ -834,6 +834,13 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       console.log(`t2Score: ${t2Score}`);
       console.log(`beforeWinningScore: ${beforeWinningScore}`);
       console.log(`player: ${player}`);
+      
+      setT1Score(t1Score);
+      setT2Score(t2Score);
+      // The final showdown, no last hand popup and whoever has better hand will win
+      if(t1Score === beforeWinningScore && t2Score === beforeWinningScore) {
+        return;
+      }
 
       if(beforeWinningScore === t1Score) {
         //lastHandShowdownOne.current = true;
@@ -843,8 +850,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         lastHandShowdownTwo.current = true;
       }
 
-      setT1Score(t1Score);
-      setT2Score(t2Score);
+
      // socket.emit("-before-winning", )
     });
 
@@ -979,6 +985,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       socket.off("3-clowns-called");
       socket.off("3-clowns-accepted-worst-outcome");
       socket.off("3-clowns-accepted-best-outcome");
+      socket.off("3-clowns-declined");
+      socket.off("3-clowns-called-already");
     };
   }, [socket]);
   return (
@@ -1100,6 +1108,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 revealHandPlayerTwo={revealHandP2}
                 playerOneHandObject={p1Hand}
                 playerTwoHandObject={p2Hand}
+                gameBoardWaitingRef={waiting.current}
               />
             </div>
           </>
