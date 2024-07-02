@@ -14,6 +14,7 @@ import CardInterface from "../interfaces/CardInterface";
 
 import "../styles/GameRoom.css";
 import { ConstructionOutlined } from "@mui/icons-material";
+import { utimes } from "fs";
 
 interface Props {
   socket: Socket;
@@ -886,20 +887,22 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         playerTwoHandObject: CardInterface[],
         t1ScoreObject: number,
         t2ScoreObject: number,
-
+        
       ) => {
 
         console.log(`3 clowns accepted best outcome`);
         console.log(player);
         if(player === p1) {
+          console.log("Player 1 gets a new hand");
           setP1Hand([]);
-  
+          
           setP1Hand([...playerOneHandObject]);
-  
+          
           setT1Score(t1ScoreObject);
           setT2Score(t2ScoreObject);
-
+          
         } else if(player === p2) {
+          console.log("Player 2 gets a new hand");
           setP2Hand([]);
   
           setP2Hand([...playerTwoHandObject]);
@@ -944,19 +947,18 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         playerOneHandObject: CardInterface[],
         playerTwoHandObject: CardInterface[],
         player: string,
+        playerTurnObject: number[],
       ) => {
-      
-      if(player === p1) {
-        setP2Hand([]);
-
-        setP2Hand([...playerTwoHandObject]);
-      } else if(player === p2) {
-        setP1Hand([]);
-        setP1Hand([...playerOneHandObject]);
-      }
-
-      setThreeClownsActivated(false);
         
+        setP2Hand([...playerTwoHandObject]);
+        setP1Hand([...playerOneHandObject]);
+
+        
+      setPlayerTurn([...playerTurnObject]); 
+      
+      setThreeClownsActivated(false);
+      
+
     });
     
 
