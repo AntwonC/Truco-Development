@@ -84,9 +84,15 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   // Three Clowns State
   const [clownsCountClickedP1, setClownsCountClickedP1] = useState<boolean>(false);
   const [clownsCountClickedP2, setClownsCountClickedP2] = useState<boolean>(false);
-
+  
+  // Reveal state for the 3 clowns worst outcome
   const [revealHandP1, setRevealHandP1] = useState<boolean>(false);
   const [revealHandP2, setRevealHandP2] = useState<boolean>(false);
+
+  // States for each player so they cannot click Truco or Three Clowns while one is already in progress
+  const [intermissionDisablePlayerOne, setIntermissionDisablePlayerOne] = useState<boolean>(false);
+  const [intermissionDisablePlayerTwo, setIntermissionDisablePlayerTwo] = useState<boolean>(false);
+  
   // Refs
   const waiting = useRef<boolean>(false);
   const trucoPressed = useRef<boolean>(false);
@@ -597,6 +603,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       ) => {
         // revealHand.current = false;
 
+        setIntermissionDisablePlayerOne(false);
+        setIntermissionDisablePlayerTwo(false);
+
+
         waiting.current = false;
 
         setT1Rounds([...roundOne]);
@@ -722,6 +732,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         // revealPlayerOneHand.current = false;
         // revealPlayerTwoHand.current = false;
 
+        setIntermissionDisablePlayerOne(false);
+        setIntermissionDisablePlayerTwo(false);
+
          setClownsCountClickedP1(false);
          setClownsCountClickedP2(false);
 
@@ -755,9 +768,11 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       if (value === 1) {
         // p1 won
         setGameWinner(1);
+        setGameStarted(false);
       } else if (value === 2) {
         // p2 won
         setGameWinner(2);
+        setGameStarted(false);
       } else {
         setGameWinner(0);
       }
@@ -783,17 +798,16 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         setRoundValue(3);
         trucoPressed.current = false;
         setAcceptTruco(false);
+        setIntermissionDisablePlayerOne(false);
+        setIntermissionDisablePlayerTwo(false);
+        return;
         // trucoPressed.current = false;
       }
+
+      setIntermissionDisablePlayerOne(true);
+      setIntermissionDisablePlayerTwo(true);
     });
-   /* io.to(roomNumberString).emit("truco-declined", 
-    currentGame.playerOneHand, 
-    currentGame.playerTwoHand,
-    currentGame.turnCard,
-    currentGame.specialCard,
-    currentGame.scoreTeamOne,
-    currentGame.scoreTeamTwo,
-    currentGame.playerTurn */
+
 
     socket.on("truco-declined", 
     (
@@ -818,8 +832,13 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       setT1Score(teamOneScore);
       setT2Score(teamTwoScore);
 
+      setGameBoardTable([]);
+
 
       setPlayerTurn([...playerTurnsObject]);
+
+      setIntermissionDisablePlayerOne(false);
+      setIntermissionDisablePlayerTwo(false);
     });
 
     socket.on("score-threshold", 
@@ -865,6 +884,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
       //threeClownsPressed.current = true;
       setThreeClownsActivated(true);
+
+      setIntermissionDisablePlayerOne(true);
+      setIntermissionDisablePlayerTwo(true);
     });
 
     socket.on("3-clowns-called-already", (player: string, numberOfCalls: number) => {
@@ -913,6 +935,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
         setThreeClownsActivated(false);
 
+        setIntermissionDisablePlayerOne(false);
+        setIntermissionDisablePlayerTwo(false);
+
 
     });
 
@@ -940,6 +965,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
       setThreeClownsActivated(false);
 
+
+      setIntermissionDisablePlayerOne(false);
+      setIntermissionDisablePlayerTwo(false);
+
     });
 
     socket.on("3-clowns-declined", 
@@ -958,6 +987,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       
       setThreeClownsActivated(false);
       
+      setIntermissionDisablePlayerOne(false);
+      setIntermissionDisablePlayerTwo(false);
 
     });
     
@@ -1111,6 +1142,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 playerOneHandObject={p1Hand}
                 playerTwoHandObject={p2Hand}
                 gameBoardWaitingRef={waiting.current}
+                intermissionPlayerOne={intermissionDisablePlayerOne}
+                intermissionPlayerTwo={intermissionDisablePlayerTwo}
               />
             </div>
           </>

@@ -41,6 +41,8 @@ interface Props {
   playerOneHandObject: CardInterface[];
   playerTwoHandObject: CardInterface[];
   gameBoardWaitingRef: boolean;
+  intermissionPlayerOne: boolean;
+  intermissionPlayerTwo: boolean;
 }
 
 const PlayerStack = ({
@@ -73,6 +75,8 @@ const PlayerStack = ({
   playerOneHandObject,
   playerTwoHandObject,
   gameBoardWaitingRef,
+  intermissionPlayerOne,
+  intermissionPlayerTwo,
 }: Props) => {
   if (user === null) return null;
 
@@ -96,7 +100,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p1, roomNumber);
               }}
-              disabled={(lastHandRefPlayerOne === true) ? true : false}
+              disabled={(lastHandRefPlayerOne === true || intermissionPlayerOne) ? true : false}
             >
               Truco
             </Button>
@@ -107,7 +111,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p1, roomNumber);
               }}
-              disabled={(playerOneHandObject.length < 3 || threeClownsClickedPlayerOne || lastHandRefPlayerOne) ? true : false}
+              disabled={(playerOneHandObject.length < 3 || threeClownsClickedPlayerOne || lastHandRefPlayerOne || intermissionPlayerOne ) ? true : false}
             >
               Three Clowns
             </Button>
@@ -220,7 +224,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p2, roomNumber);
               }}
-              disabled={(lastHandRefPlayerTwo === true) ? true : false}
+              disabled={(lastHandRefPlayerTwo === true || intermissionPlayerTwo) ? true : false}
             >
               Truco
             </Button>
@@ -232,7 +236,7 @@ const PlayerStack = ({
               onClick={() => {
                 threeClownsClicked(p2, roomNumber);
               }}
-              disabled={(playerTwoHandObject.length < 3 || threeClownsClickedPlayerTwo || lastHandRefPlayerTwo) ? true : false}
+              disabled={(playerTwoHandObject.length < 3 || threeClownsClickedPlayerTwo || lastHandRefPlayerTwo || intermissionPlayerTwo) ? true : false}
             >
               Three Clowns
           </Button>
