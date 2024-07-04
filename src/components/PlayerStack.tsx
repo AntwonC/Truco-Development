@@ -179,6 +179,23 @@ const PlayerStack = ({
           <></>
           }
 
+         {lastHandRefPlayerOne === true 
+          ?
+          <>
+          <LastHandContainer
+            show={lastHandRefPlayerOne}
+            rNumber={roomNumber}
+            acceptClicked={clickedAcceptLastHand}
+            declineClicked={clickedDeclineLastHand}
+            player={p1}
+          />
+          
+          </>
+          :
+          <>
+          </>
+          }
+
 
         {disableShowHandFunction(hand, player)}
         </>
@@ -208,6 +225,23 @@ const PlayerStack = ({
           />
           :
           <></>
+          }
+
+          {lastHandRefPlayerTwo === true 
+          ?
+          <>
+          <LastHandContainer
+            show={lastHandRefPlayerTwo}
+            rNumber={roomNumber}
+            acceptClicked={clickedAcceptLastHand}
+            declineClicked={clickedDeclineLastHand}
+            player={p2}
+          />
+          
+          </>
+          :
+          <>
+          </>
           }
         {disableShowHandFunction(hand, player)}
         </>

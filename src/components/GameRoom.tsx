@@ -78,7 +78,10 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   // Truco State
   const [acceptTruco, setAcceptTruco] = useState<boolean>(false);
 
+  // Last hand states
   const [lastHandPlayerOne, setLastHandPlayerOne] = useState<boolean>(false);
+  const [lastHandPlayerTwo, setLastHandPlayerTwo] = useState<boolean>(false);
+
   const [threeClownsActivated, setThreeClownsActivated] = useState<boolean>(false);
 
   // Three Clowns State
@@ -145,7 +148,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision...`);
    //   trucoPressed.current = false;
-      lastHandShowdownTwo.current = false;
+      //lastHandShowdownTwo.current = false;
+      setLastHandPlayerTwo(false);
     }
     socket.emit("last-hand-before-winning", player, number, true, false);
   }
@@ -158,7 +162,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       trucoPressed.current = false;
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision......`);
-      lastHandShowdownTwo.current = false;
+     // lastHandShowdownTwo.current = false;
+     setLastHandPlayerTwo(false);
     }
 
     socket.emit("last-hand-before-winning", player, number, false, true);
@@ -819,6 +824,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       teamTwoScore: number,
       playerTurnsObject: number[],
     ) => {
+
+      
       setAcceptTruco(false);
       trucoPressed.current = false;
 
@@ -862,12 +869,14 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         return;
       }
 
+
       if(beforeWinningScore === t1Score) {
         //lastHandShowdownOne.current = true;
         setLastHandPlayerOne(true);
       } else if(beforeWinningScore === t2Score) {
         //setLastHandPlayerOne(true);
-        lastHandShowdownTwo.current = true;
+       // lastHandShowdownTwo.current = true;
+        setLastHandPlayerTwo(true);
       }
 
 
@@ -916,23 +925,21 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         console.log(player);
         if(player === p1) {
           console.log("Player 1 gets a new hand");
-          setP1Hand([]);
+        //  setP1Hand([]);
           
           setP1Hand([...playerOneHandObject]);
           
-          setT1Score(t1ScoreObject);
-          setT2Score(t2ScoreObject);
-          
         } else if(player === p2) {
           console.log("Player 2 gets a new hand");
-          setP2Hand([]);
-  
+        //  setP2Hand([]);
+          
           setP2Hand([...playerTwoHandObject]);
-  
-          setT1Score(t1ScoreObject);
-          setT2Score(t2ScoreObject);
-        }
 
+        }
+        
+        setT1Score(t1ScoreObject);
+        setT2Score(t2ScoreObject);
+        
         setThreeClownsActivated(false);
 
         setIntermissionDisablePlayerOne(false);
@@ -979,8 +986,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         playerTurnObject: number[],
       ) => {
         
-        setP2Hand([...playerTwoHandObject]);
-        setP1Hand([...playerOneHandObject]);
+      setP2Hand([...playerTwoHandObject]);
+      setP1Hand([...playerOneHandObject]);
 
         
       setPlayerTurn([...playerTurnObject]); 
@@ -998,8 +1005,9 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       setRoundValue(roundValue);
 
       setLastHandPlayerOne(false);
+      setLastHandPlayerTwo(false);
     //  lastHandShowdownOne.current = false;
-      lastHandShowdownTwo.current = false;
+    //  lastHandShowdownTwo.current = false;
 
     });
 
@@ -1130,7 +1138,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 clickedAcceptLastHand={lastHandAccepted}
                 clickedDeclineLastHand={lastHandDeclined}
                 lastHandRefPlayerOne={lastHandPlayerOne}
-                lastHandRefPlayerTwo={lastHandShowdownTwo.current}
+                lastHandRefPlayerTwo={lastHandPlayerTwo}
                 clickedAcceptThreeClowns={clickedAcceptClowns}
                 clickedDeclineThreeClowns={clickedDeclineClowns}
                 threeClownsClicked={threeClownsClicked}
