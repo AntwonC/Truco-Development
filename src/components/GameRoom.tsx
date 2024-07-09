@@ -13,8 +13,7 @@ import Card from "../components/Card";
 import CardInterface from "../interfaces/CardInterface";
 
 import "../styles/GameRoom.css";
-import { ConstructionOutlined } from "@mui/icons-material";
-import { utimes } from "fs";
+
 
 interface Props {
   socket: Socket;
@@ -75,8 +74,11 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   const [gameWinner, setGameWinner] = useState<number>(-1);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-  // Truco State
-  const [acceptTruco, setAcceptTruco] = useState<boolean>(false);
+  // Truco States
+  const [trucoCountClickedP1, setTrucoCountClickedP1] = useState<boolean>(false);
+  const [trucoCountClickedP2, setTrucoCountClickedP2] = useState<boolean>(false);
+
+  const [trucoPressed, setTrucoPressed] = useState<boolean>(false);
 
   // Last hand states
   const [lastHandPlayerOne, setLastHandPlayerOne] = useState<boolean>(false);
@@ -98,7 +100,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   
   // Refs
   const waiting = useRef<boolean>(false);
-  const trucoPressed = useRef<boolean>(false);
+ // const trucoPressed = useRef<boolean>(false);
   const lastHandShowdownOne = useRef<boolean>(false);
   const lastHandShowdownTwo = useRef<boolean>(false);
   const threeClownsPressed = useRef<boolean>(false);
@@ -110,20 +112,38 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
   const trucoClicked = (player: string, number: number) => {
     // setAcceptTruco(true);
     console.log("Truco Clicked");
-    trucoPressed.current = true;
+   // trucoPressed.current = true;
+    setTrucoPressed(true);
+    if(player === p1) {
+      setTrucoCountClickedP1(true);
+    } else if(player === p2) {
+      setTrucoCountClickedP2(true);
+    }
     socket.emit("truco-clicked", player, number, false, false);
   };
   const clickedAcceptTruco = (player: string, number: number) => {
-    trucoPressed.current = false;
-    setAcceptTruco(false);
+    //trucoPressed.current = false;
+    setTrucoPressed(true);
+   // setAcceptTruco(false);
+   if(player === p1) {
+    setTrucoCountClickedP1(false);
+   } else if(player === p2) {
+    setTrucoCountClickedP2(false);
+   }
     // socket.emit("truco-accepted", )
     socket.emit("truco-clicked", player, number, true, false);
   };
   const clickedDeclineTruco = (player: string, number: number) => {
-    trucoPressed.current = false;
-    console.log("trucoPressed....");
-    console.log(trucoPressed.current);
-    setAcceptTruco(false);
+   // trucoPressed.current = false;
+   setTrucoPressed(true);
+    if(player === p1) {
+      setTrucoCountClickedP1(false);
+    } else if(player === p2) {
+      setTrucoCountClickedP2(false);
+    }
+   // console.log("trucoPressed....");
+   // console.log(trucoPressed.current);
+  //  setAcceptTruco(false);
 
     
     // setDeclineTruco(!declineTruco);
@@ -143,7 +163,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     if(p1 === player) {
       console.log(`Player 1 is making the decision...`);
       //lastHandShowdownOne.current = false;
-      trucoPressed.current = false; //.this solves problem of being stuck with not clickable cards b/c game thinks its truco round, but is really last hand truco round
+     // setTrucoPressed(true);
+    //  trucoPressed.current = false; //.this solves problem of being stuck with not clickable cards b/c game thinks its truco round, but is really last hand truco round
       setLastHandPlayerOne(false);
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision...`);
@@ -159,7 +180,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       console.log(`Player 1 is making the decision......`);
     //  lastHandShowdownOne.current = false;
       setLastHandPlayerOne(false);
-      trucoPressed.current = false;
+     // trucoPressed.current = false;
     } else if(p2 === player) {
       console.log(`Player 2 is making the decision......`);
      // lastHandShowdownTwo.current = false;
@@ -737,11 +758,16 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
         // revealPlayerOneHand.current = false;
         // revealPlayerTwoHand.current = false;
 
+        setTrucoPressed(false);
+
         setIntermissionDisablePlayerOne(false);
         setIntermissionDisablePlayerTwo(false);
 
          setClownsCountClickedP1(false);
          setClownsCountClickedP2(false);
+
+         setTrucoCountClickedP1(false);
+         setTrucoCountClickedP2(false);
 
         // setRenderAgain(false);
 
@@ -792,17 +818,20 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
     socket.on("truco-called", (value: number) => {
       if (value === -1) {
         // other player has not made the decision yet
-        trucoPressed.current = true;
-        setAcceptTruco(true); // forces re-render, use ref will be alive
+      //  trucoPressed.current = true;
+      setTrucoPressed(true);
+      //  setAcceptTruco(true); // forces re-render, use ref will be alive
       } else if (value === 1) {
         setRoundValue(1);
-        trucoPressed.current = false;
-        setAcceptTruco(false);
+       // trucoPressed.current = false;
+       setTrucoPressed(false);
+      //  setAcceptTruco(false);
         //trucoPressed.current = false;
       } else if (value === 3) {
         setRoundValue(3);
-        trucoPressed.current = false;
-        setAcceptTruco(false);
+       // trucoPressed.current = false;
+       setTrucoPressed(false);
+       // setAcceptTruco(false);
         setIntermissionDisablePlayerOne(false);
         setIntermissionDisablePlayerTwo(false);
         return;
@@ -825,9 +854,13 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
       playerTurnsObject: number[],
     ) => {
 
-      
-      setAcceptTruco(false);
-      trucoPressed.current = false;
+
+    //  setAcceptTruco(false);
+   //   trucoPressed.current = false;
+      setTrucoPressed(false);
+
+      setTrucoCountClickedP1(false);
+      setTrucoCountClickedP2(false);
 
       setP1Hand([...playerOneHand]);
       setP2Hand([...playerTwoHand]);
@@ -846,6 +879,17 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
 
       setIntermissionDisablePlayerOne(false);
       setIntermissionDisablePlayerTwo(false);
+    });
+
+    socket.on("truco-called-already", (player: string, numberOfCalls: number) => {
+      console.log(`In truco-called-already...`);
+      if(player === p1) {
+        setTrucoCountClickedP1(true);
+      } else if(player === p2) {
+        setTrucoCountClickedP2(true);
+      }
+
+      
     });
 
     socket.on("score-threshold", 
@@ -1134,7 +1178,7 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 roomNumber={roomNumber}
                 clickedAcceptTruco={clickedAcceptTruco}
                 clickedDeclineTruco={clickedDeclineTruco}
-                trucoPressedRef={trucoPressed.current}
+                trucoPressedRef={trucoPressed}
                 clickedAcceptLastHand={lastHandAccepted}
                 clickedDeclineLastHand={lastHandDeclined}
                 lastHandRefPlayerOne={lastHandPlayerOne}
@@ -1152,6 +1196,8 @@ const GameRoom = ({ socket, roomNumber, user }: Props) => {
                 gameBoardWaitingRef={waiting.current}
                 intermissionPlayerOne={intermissionDisablePlayerOne}
                 intermissionPlayerTwo={intermissionDisablePlayerTwo}
+                trucoClickedPlayerOne={trucoCountClickedP1}
+                trucoClickedPlayerTwo={trucoCountClickedP2}
               />
             </div>
           </>

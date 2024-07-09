@@ -43,6 +43,8 @@ interface Props {
   gameBoardWaitingRef: boolean;
   intermissionPlayerOne: boolean;
   intermissionPlayerTwo: boolean;
+  trucoClickedPlayerOne: boolean;
+  trucoClickedPlayerTwo: boolean;
 }
 
 const PlayerStack = ({
@@ -77,6 +79,8 @@ const PlayerStack = ({
   gameBoardWaitingRef,
   intermissionPlayerOne,
   intermissionPlayerTwo,
+  trucoClickedPlayerOne,
+  trucoClickedPlayerTwo,
 }: Props) => {
   if (user === null) return null;
 
@@ -100,7 +104,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p1, roomNumber);
               }}
-              disabled={(lastHandRefPlayerOne === true || intermissionPlayerOne) ? true : false}
+              disabled={(lastHandRefPlayerOne === true || intermissionPlayerOne || trucoClickedPlayerOne) ? true : false}
             >
               Truco
             </Button>
@@ -258,7 +262,7 @@ const PlayerStack = ({
               onClick={() => {
                 trucoClicked(p2, roomNumber);
               }}
-              disabled={(lastHandRefPlayerTwo === true || intermissionPlayerTwo) ? true : false}
+              disabled={(lastHandRefPlayerTwo === true || intermissionPlayerTwo || trucoClickedPlayerTwo) ? true : false}
             >
               Truco
             </Button>
